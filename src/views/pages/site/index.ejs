@@ -24,19 +24,22 @@
 					<div class="cate__content">
 						<% if (header.cates) { %>
 							<div class="cate__carousel" id="cateCarousel">
-								<% for(let i=0; i < header.cates.length; i +=2) { %>
+								<% for(let i=0; i < header.cates.length; i ++) { %>
 									<div class="cate__carousel-col">
 										<%- include ('../../components/cate-item', { cate: header.cates[i] }) %>
-											<%- include ('../../components/cate-item', { cate: header.cates[i + 1] }) %>
+											<!-- <%- include ('../../components/cate-item', { cate: header.cates[i] }) %> -->
+											<% console.log("Danh mục: ", header.cates); %>
+
 									</div>
 									<% } %>
 							</div>
 							<% } %>
-								<button type="button" class="cate__button" id="catePrev"><span
-										class="material-symbols-outlined"> chevron_left </span></button>
-								<button type="button" class="cate__button" id="cateNext"><span
-										class="material-symbols-outlined"> chevron_right </span></button>
-					</div>
+								<button type=" button" class="cate__button" id="catePrev"><span class="material-symbols-outlined"> chevron_left
+												</span></button>
+												<button type="button" class="cate__button" id="cateNext"><span
+														class="material-symbols-outlined"> chevron_right
+													</span></button>
+									</div>
 				</section>
 
 				<section class="outstanding-products">
