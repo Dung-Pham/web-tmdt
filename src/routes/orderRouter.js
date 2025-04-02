@@ -13,7 +13,9 @@ router.post('/updateCart', authMiddleware.getLoggedIn, orderController.updateCar
 router.get('/information', authMiddleware.isLoggedIn, orderController.information)
 router.post('/information', authMiddleware.isLoggedIn, orderController.informationPost)
 
-router.get('/payment', authMiddleware.isLoggedIn, orderController.payment)
+router.get('/payment', authMiddleware.isLoggedIn, orderController.payment);
+router.get('/payment-status', orderController.checkPayment);
+router.post('/casso-webhook', orderController.cassoWebhook);
 router.post('/cancel_order', authMiddleware.isLoggedIn, orderController.cancelOrder)
 
 module.exports = router;

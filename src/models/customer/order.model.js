@@ -64,14 +64,42 @@ order.updateCart = async function (customer_id, productsUpdateCart, callback) {
     })
 }
 
+// order.insertOrder = function (customer_id, orderInfo, orderDetails, callback) {
+//     let insertOrder = ''
+//     if (orderInfo.paying_method_id != 1) {
+//         insertOrder = `INSERT INTO orders (customer_id, order_name, order_phone, order_delivery_address, order_note, paying_method_id)
+//                         VALUES (${customer_id}, ? , '${orderInfo.order_phone}', ? , ? , ${orderInfo.paying_method_id})`
+//     } else {
+//         insertOrder = `INSERT INTO orders (customer_id, order_name, order_phone, order_delivery_address, order_note, paying_method_id, order_is_paid, order_paying_date, order_status)
+//                         VALUES (${customer_id}, ? , '${orderInfo.order_phone}', ? , ? , 1, 1, ${new Date().getDate()} ,'Đang giao hàng')`
+//     }
+
+//     db.query(insertOrder, [orderInfo.order_name, orderInfo.order_delivery_address, orderInfo.order_note], (err, result) => {
+//         if (err) {
+//             console.error(err);
+//             callback(1, 0, 0, 0);
+//         } else {
+//             let order_id = result.insertId ?? 0;
+
+//             order.insertOrderDetails(order_id, orderDetails, function (error, success) {
+//                 if (error) {
+//                     console.log(error);
+//                     callback(1, 0, 0, 0);
+//                 } else {
+//                     callback(0, 1, order_id);
+//                 }
+//             })
+//         }
+//     })
+// }
 order.insertOrder = function (customer_id, orderInfo, orderDetails, callback) {
-    let insertOrder = ''
+    let insertOrder = '';
     if (orderInfo.paying_method_id != 1) {
-        insertOrder = `INSERT INTO orders (customer_id, order_name, order_phone, order_delivery_address, order_note, paying_method_id)
-                        VALUES (${customer_id}, ? , '${orderInfo.order_phone}', ? , ? , ${orderInfo.paying_method_id})`
+        insertOrder = `INSERT INTO orders (customer_id, order_name, order_phone, order_delivery_address, order_note, paying_method_id, order_total_before, order_total_after)
+                        VALUES (${customer_id}, ? , '${orderInfo.order_phone}', ? , ? , ${orderInfo.paying_method_id}, 0, 0)`;
     } else {
-        insertOrder = `INSERT INTO orders (customer_id, order_name, order_phone, order_delivery_address, order_note, paying_method_id, order_is_paid, order_paying_date, order_status)
-                        VALUES (${customer_id}, ? , '${orderInfo.order_phone}', ? , ? , 1, 1, ${new Date().getDate()} ,'Đang giao hàng')`
+        insertOrder = `INSERT INTO orders (customer_id, order_name, order_phone, order_delivery_address, order_note, paying_method_id, order_is_paid, order_paying_date, order_status, order_total_before, order_total_after)
+                        VALUES (${customer_id}, ? , '${orderInfo.order_phone}', ? , ? , 1, 1, ${new Date().getDate()}, 'Đang giao hàng', 0, 0)`;
     }
 
     db.query(insertOrder, [orderInfo.order_name, orderInfo.order_delivery_address, orderInfo.order_note], (err, result) => {
@@ -86,30 +114,66 @@ order.insertOrder = function (customer_id, orderInfo, orderDetails, callback) {
                     console.log(error);
                     callback(1, 0, 0, 0);
                 } else {
-                    callback(0, 1, order_id);
+                    // Cập nhật tổng tiền
+                    let updateOrderTotal = `UPDATE orders 
+                                            SET order_total_before = (SELECT SUM(order_detail_quantity * order_detail_price_before) FROM order_details WHERE order_id = ${order_id}),
+                                                order_total_after = (SELECT SUM(order_detail_quantity * order_detail_price_after) FROM order_details WHERE order_id = ${order_id})
+                                            WHERE order_id = ${order_id}`;
+
+                    db.query(updateOrderTotal, (errUpdate, resUpdate) => {
+                        if (errUpdate) {
+                            console.error(errUpdate);
+                            callback(1, 0, 0, 0);
+                        } else {
+                            callback(0, 1, order_id);
+                        }
+                    });
                 }
-            })
+            });
         }
-    })
+    });
 }
 
-order.insertOrderDetails = async (order_id, orderDetails, callback) => {
-    let insertOrderDetails = `INSERT INTO order_details (order_id, product_variant_id, order_detail_quantity) 
-    VALUES (${order_id}, ${orderDetails[0].product_variant_id}, ${orderDetails[0].order_detail_quantity})`
 
-    for (let i = 1; i < orderDetails.length; i++) {
-        insertOrderDetails += ` ,(${order_id}, ${orderDetails[i].product_variant_id}, ${orderDetails[i].order_detail_quantity})`
-    }
+// order.insertOrderDetails = async (order_id, orderDetails, callback) => {
+//     let insertOrderDetails = `INSERT INTO order_details (order_id, product_variant_id, order_detail_quantity) 
+//     VALUES (${order_id}, ${orderDetails[0].product_variant_id}, ${orderDetails[0].order_detail_quantity})`
+
+//     for (let i = 1; i < orderDetails.length; i++) {
+//         insertOrderDetails += ` ,(${order_id}, ${orderDetails[i].product_variant_id}, ${orderDetails[i].order_detail_quantity})`
+//     }
+
+//     db.query(insertOrderDetails, (err, result) => {
+//         if (err) {
+//             console.log(err);
+//             callback(1, 0)
+//         } else {
+//             callback(0, 1)
+//         }
+//     })
+// }
+order.insertOrderDetails = async (order_id, orderDetails, callback) => {
+    let insertOrderDetails = `INSERT INTO order_details (order_id, product_variant_id, order_detail_quantity, order_detail_price_before, order_detail_price_after) VALUES`;
+
+    let values = orderDetails.map(item =>
+        `(${order_id}, ${item.product_variant_id}, ${item.order_detail_quantity}, 
+          (SELECT product_variant_price FROM product_variants WHERE product_variant_id = ${item.product_variant_id}),
+          (SELECT product_variant_price FROM product_variants WHERE product_variant_id = ${item.product_variant_id})
+        )`
+    ).join(", ");
+
+    insertOrderDetails += values;
 
     db.query(insertOrderDetails, (err, result) => {
         if (err) {
             console.log(err);
-            callback(1, 0)
+            callback(1, 0);
         } else {
-            callback(0, 1)
+            callback(0, 1);
         }
-    })
+    });
 }
+
 
 order.updateCancelOrder = async (order_id, callback) => {
     let updateCancelOrder = `UPDATE orders 
