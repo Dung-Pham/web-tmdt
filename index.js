@@ -7,14 +7,14 @@ const app = express()
 const dotdenv = require('dotenv').config();
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-const https = require('https');
-const fs = require('fs');
+// const https = require('https');
+// const fs = require('fs');
 
-// Cau hinh https
-const options = {
-    key: fs.readFileSync('./localhost+1-key.pem'),
-    cert: fs.readFileSync('./localhost+1.pem')
-};
+// // Cau hinh https
+// const options = {
+//     key: fs.readFileSync('./localhost+1-key.pem'),
+//     cert: fs.readFileSync('./localhost+1.pem')
+// };
 
 
 // connect to db
@@ -42,10 +42,10 @@ app.use(cookieParser('secret'))
 // route init
 route(app)
 
-// app.listen(cfg.port, () => {
-//     console.log(`Website is running at http://${cfg.host}:${cfg.port}`)
-// })
+app.listen(cfg.port, () => {
+    console.log(`Website is running at http://${cfg.host}:${cfg.port}`)
+})
 
-https.createServer(options, app).listen(3000, () => {
-    console.log('Server running on https://localhost:3000');
-});
+// https.createServer(options, app).listen(3000, () => {
+//     console.log('Server running on https://localhost:3000');
+// });

@@ -53,10 +53,29 @@
 				</div>
 			</div>
 		</div>
+		<!-- Biểu tượng chat -->
+		<div id="chat-icon" onclick="toggleChat()">
+			💬
+		</div>
+
+		<!-- Cửa sổ chat -->
+		<div id="chat-container">
+			<div id="chat-header">
+				Chatbot
+				<span onclick="toggleChat()">✖</span>
+			</div>
+			<div id="chat-box"></div>
+			<div id="chat-input-container">
+				<input type="text" id="chat-input" placeholder="Nhập tin nhắn...">
+				<button onclick="sendMessage()">Gửi</button>
+			</div>
+		</div>
+
 	</div>
 	<div class="footer--bottom">
 		<div class="footer__container--bottom">
 			<p> 2025 </p>
 		</div>
 	</div>
+	<script src="/scripts/partials/footer.js"></script>
 </footer>
