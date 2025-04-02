@@ -138,6 +138,7 @@ orderController.informationPost = async (req, res) => {
 
 // [GET] /order/payment?paying_method_id=x&order_id=y
 orderController.payment = async (req, res) => {
+	console.log("DA GOI DC TOI ORDER PAYMENT")
 	let paying_method_id = req.query.paying_method_id
 	let order_id = req.query.order_id
 

@@ -3,7 +3,7 @@ const db = require("../../config/db/connect");
 const auth = require("../../models/customer/auth.model");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
-
+const axios = require('axios');
 const index = require("../../models/customer/index.model");
 
 const authController = () => { };
@@ -38,9 +38,45 @@ authController.login = async (req, res) => {
 
 // [POST] /login
 authController.submitLogin = async (req, res) => {
+
+  try {
+    // Lấy captcha response từ request
+    const captchaResponse = req.body.captchaResponse;
+    console.log('-----------------------------------------------')
+    console.log('req CAPTCHA NHAN DUOC', captchaResponse)
+
+    
+    // Kiểm tra xem có captcha response không
+    if (!captchaResponse) {
+      console.log('KHONG XAC THUC DUOC CAPTCHA', captchaVerify.date)
+      return res.json({
+        status: "captcha_error",
+        error: "Vui lòng xác nhận bạn không phải robot."
+      });
+    }
+    
+    // Xác thực captcha với Google
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY; // Lưu trong biến môi trường
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captchaResponse}`;
+    
+    const captchaVerify = await axios.post(verifyURL);
+    console.log('-----------------------------------------------')
+    console.log('XAC THUC CAPTCHA NHAN VE', captchaVerify)
+
+    // Nếu captcha không hợp lệ
+    if (!captchaVerify.data.success) {
+      console.log('KHONG XAC THUC DUOC CAPTCHA', captchaVerify.date)
+      return res.json({
+        status: "captcha_error",
+        error: "Xác thực reCAPTCHA thất bại. Vui lòng thử lại."
+      });
+    }
+
+    // tiep tuc dang nhap
   await auth.loginPost(
     req,
     function (err, nonePhoneNumber, NotMatchPassword, success, id) {
+      
       if (err) res.render("./pages/site/404-error");
       if (nonePhoneNumber) {
         return res.json({
@@ -57,6 +93,7 @@ authController.submitLogin = async (req, res) => {
       }
 
       if (success) {
+        res.render("./pages/site/about-us");
         const token = jwt.sign(
           {
             id,
@@ -81,6 +118,13 @@ authController.submitLogin = async (req, res) => {
       }
     }
   );
+} catch (error) {
+  console.error("Login process error:", error);
+  return res.json({
+    status: "server_error",
+    error: "Đã xảy ra lỗi, vui lòng thử lại sau."
+  });
+}
 };
 
 authController.logout = async (req, res) => {

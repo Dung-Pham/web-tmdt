@@ -96,7 +96,15 @@ const validateInput = () => {
 
     const PhoneNumberValue = phoneNumber.value.trim();
     const PasswordValue = password.value.trim();
-
+    // Lấy captcha response tại thời điểm submit
+    let captchaResponse;
+    try {
+        captchaResponse = grecaptcha.getResponse();
+    } catch (error) {
+        console.error('reCAPTCHA error:', error);
+        setCustomError('captcha-error', 'Lỗi xác thực CAPTCHA, vui lòng tải lại trang');
+        return;
+    }
     let isAllValid = true;
 
     if (PhoneNumberValue === '') {
@@ -119,10 +127,19 @@ const validateInput = () => {
         setSuccess(password);
     }
 
+    // Kiểm tra CAPTCHA
+    // if (!captchaResponse) {
+    //     setCustomError('captcha-error', 'Vui lòng xác nhận bạn không phải là robot');
+    //     isAllValid = false;
+    // } else {
+    //     setCustomError('captcha-error', '');
+    // }
+
     if (isAllValid) {
         const login = {
             phoneNumber: phoneNumber.value.trim(),
-            password: password.value.trim()
+            password: password.value.trim(),
+            captchaResponse: captchaResponse // Thêm captcha response vào dữ liệu gửi đi
         }
         fetch("/auth/login", {
             method: 'POST',
@@ -136,6 +153,11 @@ const validateInput = () => {
             }
             else if (back.status == "error2") {
                 setError(password, back.error);
+            }
+            else if (back.status == "captcha_error") {
+                setCustomError('captcha-error', back.error);
+                // Reset captcha khi xác thực thất bại
+                grecaptcha.reset();
             }
             else {
                 window.location.href = '/'
