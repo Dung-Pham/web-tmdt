@@ -1,6 +1,18 @@
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Đảm bảo chat container ẩn khi trang tải xong
+    document.getElementById('chat-container').style.display = 'none';
+});
 function toggleChat() {
+    // const chatContainer = document.getElementById('chat-container');
+    // chatContainer.style.display = chatContainer.style.display === 'flex' ? 'none' : 'flex';
+
     const chatContainer = document.getElementById('chat-container');
-    chatContainer.style.display = chatContainer.style.display === 'flex' ? 'none' : 'flex';
+    if (chatContainer.style.display === 'none' || chatContainer.style.display === '') {
+        chatContainer.style.display = 'block';
+    } else {
+        chatContainer.style.display = 'none';
+    }
 }
 
 async function sendMessage() {
