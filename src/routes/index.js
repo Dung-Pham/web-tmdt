@@ -8,6 +8,7 @@ const orderRouter = require('./orderRouter')
 const searchRouter = require('./searchRouter')
 const generalRouter = require('./generalRouter')
 const chatbotRoutes = require('./chatbot');
+
 function route(app) {
 
   app.use('/admin', adminRouter)
