@@ -160,6 +160,8 @@ const validateInput = () => {
                 grecaptcha.reset();
             }
             else {
+                // Xóa lịch sử tin nhắn sau khi đăng nhập thành công
+                sessionStorage.removeItem('chatHistory'); // Ví dụ: xóa tin nhắn trong localStorage
                 window.location.href = '/'
             }
         })
