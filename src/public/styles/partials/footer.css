@@ -307,11 +307,11 @@
     width: 320px;
     height: 450px;
     background: white;
-    border-radius: 15px;
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
-    z-index: 999;
-    border: 1px solid #e1e1e1;
-    overflow: hidden; /* Quan trọng: giữ nội dung trong khung */
+
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    flex-direction: column;
 }
 
 /* Header của chatbot */

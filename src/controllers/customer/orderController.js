@@ -170,14 +170,13 @@ orderController.payment = async (req, res) => {
 			const bank = process.env.BANK_CODE;
 			const account = process.env.BANK_ACCOUNT;
 			const descrip = `Thanh toan don hang ${order_id}`;
-			const qrResponse = await axios.post('https://api.vietqr.io/v2/generate', {
-				accountNo: account, amount, descrip, acqId: '970422', accountName: 'Do Thi Quynh', template: 'compact'
-			});
+			const accountName = "Do Thi Quynh";
+			const qrImageUrl = `https://img.vietqr.io/image/${bank}-${account}-compact.png?amount=${amount}&addInfo=${order_id}&accountName=${encodeURIComponent(accountName)}`;
 			res.render("./pages/order/atm", {
 				order_id,
 				amount,
 				descrip,
-				qrImageUrl: qrResponse.data.data.qrDataURL
+				qrImageUrl
 			})
 		} catch (error) {
 			console.error('Lỗi tạo VietQR:', error);
