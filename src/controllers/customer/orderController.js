@@ -196,6 +196,19 @@ orderController.payment = async (req, res) => {
 	}
 }
 
+orderController.paymentNotification = async (req, res) => {
+	console.log('Nhận được dữ liệu SMS:', req.body);
+	const { message, sender, time, parsed } = req.body;
+	
+	res.json({
+		success: true,
+		message: 'Dữ liệu SMS Banking đã được xử lý'
+	  });
+
+	
+}
+
+
 orderController.cancelOrder = async (req, res) => {
 	let order_id = req.body.order_id;
 

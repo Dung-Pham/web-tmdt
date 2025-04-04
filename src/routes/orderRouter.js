@@ -18,4 +18,5 @@ router.get('/payment-status', orderController.checkPayment);
 router.post('/casso-webhook', orderController.cassoWebhook);
 router.post('/cancel_order', authMiddleware.isLoggedIn, orderController.cancelOrder)
 
+router.post('/payment-notification' , orderController.paymentNotification);
 module.exports = router;
