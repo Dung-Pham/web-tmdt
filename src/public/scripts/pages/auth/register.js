@@ -120,7 +120,15 @@ const validateInput = async () => {
     const phoneNumberValue = phoneNumber.value.trim();
     const passwordValue = password.value.trim();
     const passwordRepeatValue = passwordRepeat.value.trim();
-
+    // Lấy captcha response tại thời điểm submit
+    let captchaResponse;
+    try {
+        captchaResponse = grecaptcha.getResponse();
+    } catch (error) {
+        console.error('reCAPTCHA error:', error);
+        setCustomError('captcha-error', 'Lỗi xác thực CAPTCHA, vui lòng tải lại trang');
+        return;
+    }
     // Kiểm tra giá trị của các trường thông tin
     let isAllValid = true;
 
@@ -165,20 +173,27 @@ const validateInput = async () => {
         const register = {
             user_login_name: userName.value.trim(),
             user_phone: phoneNumber.value.trim(),
-            user_password: password.value.trim()
+            user_password: password.value.trim(),
+            captchaResponse: captchaResponse // Thêm captcha response vào dữ liệu gửi đi
         };
 
         await fetch("/auth/register", {
-                method: "POST",
-                body: JSON.stringify(register),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            }).then(res => res.json())
+            method: "POST",
+            body: JSON.stringify(register),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(res => res.json())
             .then(async back => {
                 if (back.status == "error") {
                     setError(phoneNumber, back.error);
-                } else {
+                }
+                else if (back.status == "captcha_error") {
+                    setCustomError('captcha-error', back.error);
+                    // Reset captcha khi xác thực thất bại
+                    grecaptcha.reset();
+                }
+                else {
                     const login = {
                         phoneNumber: phoneNumber.value.trim(),
                         password: password.value.trim()
@@ -191,8 +206,8 @@ const validateInput = async () => {
                             "Content-Type": "application/json"
                         }
                     })
-                    location.reload()
-                    // window.location.href ='/'
+                    // location.reload()
+                    window.location.href = '/auth/login'
                 }
             })
     }
