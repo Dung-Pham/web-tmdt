@@ -1,7 +1,16 @@
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Đảm bảo chat container ẩn khi trang tải xong
     document.getElementById('chat-container').style.display = 'none';
+    const chatBox = document.getElementById('chat-box');
+    const chatHistory = JSON.parse(sessionStorage.getItem('chatHistory')) || [];
+    // Làm sạch nội dung chatBox trước khi hiển thị lại
+    chatBox.innerHTML = '';
+    // Duyệt qua lịch sử và hiển thị tin nhắn
+    chatHistory.forEach(entry => {
+        const messageClass = entry.sender === 'user' ? 'user-message' : 'bot-message';
+        chatBox.innerHTML += `<div class="${messageClass}">${entry.text}</div>`;
+    });
 });
 function toggleChat() {
     // const chatContainer = document.getElementById('chat-container');
@@ -22,7 +31,10 @@ async function sendMessage() {
 
     const chatBox = document.getElementById('chat-box');
     chatBox.innerHTML += `<div class="user-message">${message}</div>`; // Thêm tin nhắn người dùng
-
+    // Lưu tin nhắn vào sessionStorage
+    let chatHistory = JSON.parse(sessionStorage.getItem('chatHistory')) || [];
+    chatHistory.push({ sender: 'user', text: message });
+    sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
     try {
         const response = await fetch('/chatbot', { // Đường dẫn đầy đủ
             method: 'POST',
@@ -38,6 +50,8 @@ async function sendMessage() {
         // Kiểm tra trường "res" từ phản hồi của Django
         const botReply = data.res || 'No response from bot';
         chatBox.innerHTML += `<div class="bot-message">${botReply}</div>`;
+        chatHistory.push({ sender: 'bot', text: botReply });
+        sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
     } catch (error) {
         console.error('Error:', error);
         chatBox.innerHTML += `<div class="error-message">Lỗi: ${error.message}</div>`;
@@ -45,7 +59,14 @@ async function sendMessage() {
 
     input.value = ''; // Xóa input
 }
+function logout() {
+    // Xóa lịch sử tin nhắn khi đăng xuất
+    sessionStorage.removeItem('chatHistory');
 
+    // Chuyển hướng đến trang đăng nhập (nếu cần)
+    window.location.href = '/';
+}
+document.getElementById('btn-dropdown-logout')?.addEventListener('click', logout);
 // Gắn sự kiện cho nút gửi (giả sử có button với id="send-button")
 document.getElementById('send-button')?.addEventListener('click', sendMessage);
 
