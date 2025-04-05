@@ -14,9 +14,9 @@ router.get('/information', authMiddleware.isLoggedIn, orderController.informatio
 router.post('/information', authMiddleware.isLoggedIn, orderController.informationPost)
 
 router.get('/payment', authMiddleware.isLoggedIn, orderController.payment);
-router.get('/payment-status', orderController.checkPayment);
+// router.get('/payment-status', orderController.checkPayment); //ko xoa
 router.post('/casso-webhook', orderController.cassoWebhook);
 router.post('/cancel_order', authMiddleware.isLoggedIn, orderController.cancelOrder)
 
-router.post('/payment-notification' , orderController.paymentNotification);
+// router.post('/payment-notification' , orderController.paymentNotification);  //ko xoa
 module.exports = router;
