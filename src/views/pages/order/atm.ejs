@@ -6,41 +6,86 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Thanh toán VietQR</title>
 	<style>
-		body {
-			font-family: Arial, sans-serif;
-			text-align: center;
-			margin: 50px;
-		}
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
 
-		.container {
-			max-width: 500px;
-			margin: auto;
-			padding: 20px;
-			border: 1px solid #ddd;
-			border-radius: 10px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-		}
+        .container {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-		img {
-			max-width: 100%;
-			height: auto;
-			margin-top: 20px;
-		}
-	</style>
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+
+        #payment-success {
+            display: none;
+            background-color: #DFF2BF;
+            color: #4F8A10;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        #payment-info {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 48px;
+            color: #4F8A10;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script src="/scripts/pages/order/atm.js"></script>
 </head>
 
 <body>
-	<div class="container">
-		<h2>Thanh toán đơn hàng <%= order_id %>
-		</h2>
-		<p>Số tiền: <strong>
-				<%= amount %> VND
-			</strong></p>
-		<p>Nội dung: <%= descrip %>
-		</p>
-		<img src="<%= qrImageUrl %>" alt="Mã QR VietQR">
-		<p>Vui lòng quét mã QR để thanh toán.</p>
-	</div>
+    <div class="container">
+        <h2>Đơn hàng <span id="order-id"><%= order_id %></span></h2>
+        
+        <!-- Phần hiển thị thông tin thanh toán -->
+        <div id="payment-info">
+            <p>Số tiền: <strong><%= amount %> VND</strong></p>
+            <p>Nội dung: <%= descrip %></p>
+            <img id="qr-code" src="<%= qrImageUrl %>" alt="Mã QR VietQR">
+            <p>Vui lòng quét mã QR để thanh toán.</p>
+        </div>
+        
+        <!-- Phần hiển thị khi thanh toán thành công -->
+        <div id="payment-success">
+            <div class="success-icon">✓</div>
+            <h3>Thanh toán thành công!</h3>
+            <p>Cảm ơn bạn đã thanh toán đơn hàng.</p>
+            <p>Mã đơn hàng: <strong><%= order_id %></strong></p>
+            <p>Số tiền: <strong><%= amount %> VND</strong></p>
+            <button id="continue-shopping" onclick="window.location.href='/'">Tiếp tục mua sắm</button>
+        </div>
+    </div>
 </body>
 
 </html>

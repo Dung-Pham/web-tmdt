@@ -6,8 +6,28 @@ const account = require("../../models/customer/account.model")
 const qs = require("qs");
 const axios = require("axios");
 const { env } = require("process")
+const Redis = require("ioredis");
+const redis = new Redis(); // Kết nối đến localhost:6379
+redis.on('connect', () => {
+	console.log('Connected to Redis successfully');
+  });
+  
+  redis.on('error', (err) => {
+	console.error('Redis connection error:', err);
+  });
+
+  redis.on('ready', () => {
+	console.log('Redis client ready');
+	// Thử lưu một giá trị test
+	redis.set('test:app', 'hello from app').then(() => {
+	  console.log('Test value saved to Redis');
+	}).catch(err => {
+	  console.error('Failed to save test value:', err);
+	});
+  });
 require("dotenv").config();
 const orderController = () => { }
+
 
 // [POST] /order/addCart
 orderController.addCart = async (req, res) => {
@@ -194,17 +214,62 @@ orderController.payment = async (req, res) => {
 		return res.status(400).json({ error: "Phương thức thanh toán không hợp lệ" });
 	}
 }
+// Hàm chuyển đổi từ '14:42 03/04/2025' sang '2025-04-03' (chỉ lấy ngày)
+function formatDate(dateTimeStr) {
+    try {
+        // Tách thời gian và ngày
+        const parts = dateTimeStr.split(' ');
+        if (parts.length < 2) {
+            throw new Error('Định dạng ngày giờ không hợp lệ');
+        }
+        
+        // Lấy phần ngày
+        const dateStr = parts[1]; // Lấy phần "03/04/2025"
+        
+        // Tách ngày, tháng, năm
+        const [day, month, year] = dateStr.split('/');
+        
+        // Kết hợp theo định dạng ngày MySQL (YYYY-MM-DD)
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    } catch (error) {
+        console.error('Lỗi khi định dạng ngày tháng:', error);
+        // Trả về ngày hiện tại nếu không thể chuyển đổi
+        return new Date().toISOString().slice(0, 10);
+    }
+}
 
 orderController.paymentNotification = async (req, res) => {
 	console.log('Nhận được dữ liệu SMS:', req.body);
-	const { message, sender, time, parsed } = req.body;
-	
-	res.json({
-		success: true,
-		message: 'Dữ liệu SMS Banking đã được xử lý'
-	  });
+	let { order_id, amount, timestamp } = req.body.payment;
+	const date = formatDate(timestamp);
 
-	
+	console.log('orderID nhan duoc: ', order_id)
+	console.log('amount nhan duoc: ', amount)
+	console.log('time nhan duoc: ', date)
+
+	try {
+		const payment = await account.getPaymentStatus(order_id); // lay tu db de luu vao cache
+		amount = payment.order_total_after - amount // so tien con lai phai tra
+	} catch (error) {
+		console.error('Lỗi get database:', error);
+	}
+	await account.updatePaymentSMS(order_id, amount, date, function (err, success) {
+		if (err) {
+			res.status(404).json({
+				status: 'error',
+			})
+		} else {
+			res.status(200).json({
+				status: 'success',
+			})
+		}
+	}); 
+	paymentCachedUpdate(order_id);
+
+	// res.json({
+	// 	success: true,
+	// 	message: 'Dữ liệu SMS Banking đã được xử lý'
+	//   });
 }
 
 
@@ -223,30 +288,73 @@ orderController.cancelOrder = async (req, res) => {
 		}
 	})
 }
+
 orderController.checkPayment = async (req, res) => {
 	try {
-		const customer_id = req.user.customer_id;
+		console.log('DAY LA REQ NHAN DUOC',req.query);
+		// const customer_id = req.query.customer_id;
 		const order_id = req.query.order_id;
-		let purchase = await account.getPurchaseHistory(customer_id, 0, order_id);
-		const amount = purchase[0].order_total_after;
-		const response = await axios.get('https://api.casso.io/v2/transactions', {
-			headers: { 'Authorization': `Apikey ${process.env.API_key}` }
-		});
+	
 
-		const transactions = response.data.data;
-		const paidTransaction = transactions.find(t => t.description.includes(order_id) && t.amount == amount);
+		// 1. kiem tra payment trong cache, ko co thi truy van vao DB
+		const cacheKey = order_id;
+		let paymentStatus = await redis.get(cacheKey);
+		console.log('DAY LA LAY TU REDIS TU DAU', paymentStatus)
 
-		res.render('./pages/order/payment-status', {
-			order_id,
-			status: paidTransaction ? 'Thanh toán thành công!' : 'Chưa nhận được thanh toán!',
-			isSuccess: !!paidTransaction
-		});
+		if(paymentStatus) {
+			console.log('truoc khi json:' , paymentStatus)
+			 paymentStatus = JSON.parse(paymentStatus);
+			 console.log('sau khi json:' , paymentStatus)
+			// kiem tra phu thuoc thoi gian 
+			const cacheAge = Date.now() - paymentStatus.cached_at;
+			console.log('DAY LA Date NOW',Date.now())
+			console.log('DAY LA CACHE AT',paymentStatus.cached_at)
+
+			console.log('DAY LA CACHE AGE',cacheAge)
+			if(cacheAge < 60000) { // 60s: trong vong 1 phut ma k cos gi thay doi thi check lai db
+				// data moi ko can kiem tra lai DB
+				console.log('cached data of: ', paymentStatus)
+				return res.json({
+					message : 'from cache',
+					paymentStatus
+				});
+			}
+			else if (paymentStatus.order_is_paid === 0){
+				// check lai tu DB
+				paymentStatus = await paymentCachedUpdate( order_id);
+				return res.json({
+					message : 'from database',
+					paymentStatus
+				});
+			}
+		}
+		else {
+			// luu data vao cache
+			paymentStatus = await paymentCachedUpdate( order_id);
+			console.log('database check of: ', paymentStatus)
+			return res.json({
+				message : 'from database',
+				paymentStatus
+			});
+		}
 	} catch (error) {
 		console.error('Lỗi kiểm tra thanh toán:', error);
 		res.status(500).send('Lỗi kiểm tra thanh toán');
 	}
 };
 
+let paymentCachedUpdate = async ( order_id) => {
+	try {
+		const paymentStatus = await account.getPaymentStatus(order_id); // lay tu db de luu vao cache
+		console.log('tai sao ko co kq tra ve: ', paymentStatus)
+		paymentStatus.cached_at = Date.now();
+		await redis.set(order_id, JSON.stringify(paymentStatus), 'EX',60); //cache nay ton tai trong 5 phut
+		console.log('update cache for: ', paymentStatus)
+		return paymentStatus
+	} catch (error) {
+        console.error('Failed:', error);
+    }
+}
 // Webhook tự động cập nhật trạng thái thanh toán
 orderController.cassoWebhook = async (req, res) => {
 	try {
