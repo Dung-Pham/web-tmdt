@@ -53,24 +53,23 @@ account.checkPassword = async (req, callback) => {
         }
     })
 }
-account.getPaymentStatus = async (order_id) =>{
+account.getPaymentStatus = async (order_id) => {
     let getPaymentStatus = `SELECT * FROM view_payments WHERE order_id = ${order_id}`
-    
+
     let paymentStatus = await query(getPaymentStatus)
     console.log('DAY LA PAYMENT STATUS', paymentStatus[0])
     if (!paymentStatus[0]) {
         return 0
     } else {
         return paymentStatus[0]
-    }  
+    }
 
-    
+
 }
-account.updatePaymentSMS = async (order_id, amount, date, callback) =>{
+account.updatePaymentSMS = async (order_id, amount, date, callback) => {
     const updateInfo = `
         UPDATE orders 
         SET 
-            order_total_after = ?,
             order_paying_date = ?,
             order_is_paid = ?,
             order_status = ?
@@ -78,7 +77,6 @@ account.updatePaymentSMS = async (order_id, amount, date, callback) =>{
     `
 
     const values = [
-        amount,
         date,
         amount == 0 ? 1 : 0,
         amount == 0 ? 'Đang giao hàng' : 'Chưa thanh toán',
@@ -88,19 +86,19 @@ account.updatePaymentSMS = async (order_id, amount, date, callback) =>{
     try {
         // Sử dụng pattern async/await nhất quán
         const result = await query(updateInfo, values);
-        
+
         // Nếu cập nhật thành công
         if (result && result.affectedRows > 0) {
-            callback(0, 1); 
+            callback(0, 1);
         } else {
-            callback(1, 0); 
+            callback(1, 0);
         }
     } catch (err) {
         console.error('Lỗi khi cập nhật trạng thái thanh toán:', err);
         callback(1, 0); // Thất bại - có lỗi xảy ra
     }
 
-    
+
 }
 account.getPurchaseHistory = async (customer_id, order_status, order_id) => {
     let getPurchaseHistorys = `SELECT * 
@@ -172,7 +170,7 @@ account.viewFeedback = async (customer_id, order_id, product_variant_id) => {
         return 0
     } else {
         return feedback[0]
-    }  
+    }
 }
 
 module.exports = account
