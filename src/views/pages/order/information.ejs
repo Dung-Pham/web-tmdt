@@ -16,8 +16,8 @@
 
 <body>
 	<%- include('../../partials/header') %>
-		<%- include('../../partials/breadcrumb', { breadcrumbs : [{ text : 'Đặt hàng' , link : '' }, { text
-			: 'Điền thông tin đặt hàng' , link : '' }] }) %>
+		<%- include('../../partials/breadcrumb', { breadcrumbs: [{ text: 'Đặt hàng' , link: '' }, {
+			text: 'Điền thông tin đặt hàng' , link: '' }] }) %>
 
 			<main class="order-container">
 				<section class="order-product">
@@ -54,20 +54,22 @@
 						<div class="order-detail__location location">
 							<h2>Địa chỉ nhận hàng</h2>
 							<div class="location__input-group">
-								<input name="province" onchange="changeProvince(event)" class="location__select"
-									type="text" list="province" placeholder="Tỉnh/Thành phố" required>
-								<datalist id="province">
-									<option value="Hồ Chí Minh"></option>
-									<option value="Vũng Tàu"></option>
-								</datalist>
+								<select name="province" onchange="calculateFee()" class="location__select" required>
+									<option value="">Chọn Tỉnh/Thành phố</option>
+								</select>
+								<p class="error">Vui lòng chọn tỉnh/thành phố!</p>
 
-								<input name="district" onchange="changeDistrict(event)" class="location__select"
-									type="text" list="district" placeholder="Quận/huyện" required>
-								<datalist id="district"> </datalist>
-								<input name="ward" class="location__select" type="text" list="ward"
-									placeholder="Phường/xã" required>
-								<datalist id="ward"> </datalist>
-								<input name="address" type="text" placeholder="Địa chỉ" required>
+								<select name="district" onchange="calculateFee()" class="location__select" required>
+									<option value="">Chọn Quận/Huyện</option>
+								</select>
+								<p class="error">Vui lòng chọn quận/huyện!</p>
+
+								<select name="ward" onchange="calculateFee()" class="location__select" required>
+									<option value="">Chọn Phường/Xã</option>
+								</select>
+								<p class="error">Vui lòng chọn phường/xã!</p>
+
+								<input name="address" type="text" placeholder="Địa chỉ cụ thể" required>
 							</div>
 						</div>
 
@@ -94,24 +96,49 @@
 								</div>
 							</div>
 						</div>
+
+						<div class="order-detail__shipping-method shipping-method">
+							<h2>Phương thức vận chuyển</h2>
+							<div class="shipping-method__choose">
+								<!-- Hardcode các phương thức vận chuyển -->
+								<div>
+									<input type="radio" id="ship1" name="shipping_method" value="road" checked
+										onchange="calculateFee()">
+									<label for="ship1">Vận chuyển bộ (Tiết kiệm)</label>
+								</div>
+								<div>
+									<input type="radio" id="ship2" name="shipping_method" value="fly"
+										onchange="calculateFee()">
+									<label for="ship2">Vận chuyển bay (Nhanh)</label>
+								</div>
+							</div>
+						</div>
+
+						<!-- Loại bỏ hidden input vì không cần shipping_method_id nữa -->
 					</section>
 				</form>
 
 				<section class="order-pay">
 					<div class="order-pay__price">
 						<div class="order-pay__price-container">
-							<div><del class="order-pay__total-del"></del></div>
-							<div>
-								<p>Tổng tiền hàng</p>
-								<p class="order-pay__total"></p>
+							<div class="order-pay__row">
+								<span>Tổng tiền sản phẩm:</span>
+								<span id="total-product-price">0đ</span>
+							</div>
+							<div class="order-pay__row">
+								<span>Phí vận chuyển:</span>
+								<span id="shipping-fee">0đ</span>
+							</div>
+							<div class="order-pay__row order-pay__row--bold">
+								<span>Tổng thanh toán:</span>
+								<span id="total-payment">0đ</span>
 							</div>
 						</div>
 					</div>
 
 					<div class="order-pay__submit">
-						<p>Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo
-							<br><a href="/privacy-policy">Điều khoản đặt hàng của DQC</a>
-						</p>
+						<p>Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo<br><a href="/privacy-policy">Điều
+								khoản đặt hàng của DQC</a></p>
 						<button id="order-form-submit" type="submit" form="order-form">Đặt hàng</button>
 					</div>
 				</section>
@@ -124,7 +151,6 @@
 						<script src="/scripts/components/scrollup.js"></script>
 						<script src="/scripts/pages/order/information.js"></script>
 						<script src="/scripts/partials/header.js"></script>
-
 </body>
 
 </html>

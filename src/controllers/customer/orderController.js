@@ -11,7 +11,7 @@ const { env } = require("process")
 // redis.on('connect', () => {
 // 	console.log('Connected to Redis successfully');
 //   });
-  
+
 //   redis.on('error', (err) => {
 // 	console.error('Redis connection error:', err);
 //   });
@@ -126,7 +126,7 @@ orderController.information = async (req, res) => {
 	res.render("./pages/order/information", {
 		header: header,
 		user: header_user,
-		formatFunction: formatFunction,
+		formatFunction: formatFunction
 	})
 }
 
@@ -186,7 +186,7 @@ orderController.payment = async (req, res) => {
 		})
 	} else if (paying_method_id == 2) {
 		try {
-			const amount = purchase[0].order_total_after;
+			const amount = purchase[0].order_total_before;
 			const bank = process.env.BANK_CODE;
 			const account = process.env.BANK_ACCOUNT;
 			const descrip = `Thanh toan don hang ${order_id}`;
@@ -216,26 +216,26 @@ orderController.payment = async (req, res) => {
 }
 // Hàm chuyển đổi từ '14:42 03/04/2025' sang '2025-04-03' (chỉ lấy ngày)
 function formatDate(dateTimeStr) {
-    try {
-        // Tách thời gian và ngày
-        const parts = dateTimeStr.split(' ');
-        if (parts.length < 2) {
-            throw new Error('Định dạng ngày giờ không hợp lệ');
-        }
-        
-        // Lấy phần ngày
-        const dateStr = parts[1]; // Lấy phần "03/04/2025"
-        
-        // Tách ngày, tháng, năm
-        const [day, month, year] = dateStr.split('/');
-        
-        // Kết hợp theo định dạng ngày MySQL (YYYY-MM-DD)
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    } catch (error) {
-        console.error('Lỗi khi định dạng ngày tháng:', error);
-        // Trả về ngày hiện tại nếu không thể chuyển đổi
-        return new Date().toISOString().slice(0, 10);
-    }
+	try {
+		// Tách thời gian và ngày
+		const parts = dateTimeStr.split(' ');
+		if (parts.length < 2) {
+			throw new Error('Định dạng ngày giờ không hợp lệ');
+		}
+
+		// Lấy phần ngày
+		const dateStr = parts[1]; // Lấy phần "03/04/2025"
+
+		// Tách ngày, tháng, năm
+		const [day, month, year] = dateStr.split('/');
+
+		// Kết hợp theo định dạng ngày MySQL (YYYY-MM-DD)
+		return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+	} catch (error) {
+		console.error('Lỗi khi định dạng ngày tháng:', error);
+		// Trả về ngày hiện tại nếu không thể chuyển đổi
+		return new Date().toISOString().slice(0, 10);
+	}
 }
 
 orderController.paymentNotification = async (req, res) => {
@@ -263,7 +263,7 @@ orderController.paymentNotification = async (req, res) => {
 				status: 'success',
 			})
 		}
-	}); 
+	});
 	paymentCachedUpdate(order_id);
 
 	// res.json({
@@ -290,49 +290,49 @@ orderController.cancelOrder = async (req, res) => {
 }
 orderController.checkPayment = async (req, res) => {
 	try {
-		console.log('DAY LA REQ NHAN DUOC',req.query);
+		console.log('DAY LA REQ NHAN DUOC', req.query);
 		// const customer_id = req.query.customer_id;
 		const order_id = req.query.order_id;
-	
+
 
 		// 1. kiem tra payment trong cache, ko co thi truy van vao DB
 		const cacheKey = order_id;
 		let paymentStatus = await redis.get(cacheKey);
 		console.log('DAY LA LAY TU REDIS TU DAU', paymentStatus)
 
-		if(paymentStatus) {
-			console.log('truoc khi json:' , paymentStatus)
-			 paymentStatus = JSON.parse(paymentStatus);
-			 console.log('sau khi json:' , paymentStatus)
+		if (paymentStatus) {
+			console.log('truoc khi json:', paymentStatus)
+			paymentStatus = JSON.parse(paymentStatus);
+			console.log('sau khi json:', paymentStatus)
 			// kiem tra phu thuoc thoi gian 
 			const cacheAge = Date.now() - paymentStatus.cached_at;
-			console.log('DAY LA Date NOW',Date.now())
-			console.log('DAY LA CACHE AT',paymentStatus.cached_at)
+			console.log('DAY LA Date NOW', Date.now())
+			console.log('DAY LA CACHE AT', paymentStatus.cached_at)
 
-			console.log('DAY LA CACHE AGE',cacheAge)
-			if(cacheAge < 60000) { // 60s: trong vong 1 phut ma k cos gi thay doi thi check lai db
+			console.log('DAY LA CACHE AGE', cacheAge)
+			if (cacheAge < 60000) { // 60s: trong vong 1 phut ma k cos gi thay doi thi check lai db
 				// data moi ko can kiem tra lai DB
 				console.log('cached data of: ', paymentStatus)
 				return res.json({
-					message : 'from cache',
+					message: 'from cache',
 					paymentStatus
 				});
 			}
-			else if (paymentStatus.order_is_paid === 0){
+			else if (paymentStatus.order_is_paid === 0) {
 				// check lai tu DB
-				paymentStatus = await paymentCachedUpdate( order_id);
+				paymentStatus = await paymentCachedUpdate(order_id);
 				return res.json({
-					message : 'from database',
+					message: 'from database',
 					paymentStatus
 				});
 			}
 		}
 		else {
 			// luu data vao cache
-			paymentStatus = await paymentCachedUpdate( order_id);
+			paymentStatus = await paymentCachedUpdate(order_id);
 			console.log('database check of: ', paymentStatus)
 			return res.json({
-				message : 'from database',
+				message: 'from database',
 				paymentStatus
 			});
 		}
@@ -342,17 +342,17 @@ orderController.checkPayment = async (req, res) => {
 	}
 };
 
-let paymentCachedUpdate = async ( order_id) => {
+let paymentCachedUpdate = async (order_id) => {
 	try {
 		const paymentStatus = await account.getPaymentStatus(order_id); // lay tu db de luu vao cache
 		console.log('tai sao ko co kq tra ve: ', paymentStatus)
 		paymentStatus.cached_at = Date.now();
-		await redis.set(order_id, JSON.stringify(paymentStatus), 'EX',60); //cache nay ton tai trong 5 phut
+		await redis.set(order_id, JSON.stringify(paymentStatus), 'EX', 60); //cache nay ton tai trong 5 phut
 		console.log('update cache for: ', paymentStatus)
 		return paymentStatus
 	} catch (error) {
-        console.error('Failed:', error);
-    }
+		console.error('Failed:', error);
+	}
 }
 // Webhook tự động cập nhật trạng thái thanh toán
 orderController.cassoWebhook = async (req, res) => {

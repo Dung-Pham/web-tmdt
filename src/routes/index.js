@@ -7,12 +7,11 @@ const authRouter = require('./authRouter')
 const orderRouter = require('./orderRouter')
 const searchRouter = require('./searchRouter')
 const generalRouter = require('./generalRouter')
-const chatbotRoutes = require('./chatbot');
-
+const chatbotRouter = require('./chatbot')
 function route(app) {
 
   app.use('/admin', adminRouter)
-  app.use('/chatbot', chatbotRoutes)
+  app.use('/chatbot', chatbotRouter)
   app.use('/search', searchRouter)
   app.use('/order', orderRouter)
   app.use('/auth', authRouter)
