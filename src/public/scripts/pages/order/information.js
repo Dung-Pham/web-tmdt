@@ -158,15 +158,24 @@ function updateTotalPrice() {
 
 // Tải danh sách địa lý
 async function loadProvinces() {
-    const provinceSelect = document.querySelector('select[name="province"]');
+    console.log('du lieu tinh1')
+    const provinceSelect = document.getElementById('province');
+
+
+    // const provinceSelect = document.querySelector('select[name="province"]');
+
     try {
-        const response = await fetch('/order/provinces');
+        const response = await fetch('https://provinces.open-api.vn/api/p/');
+
+        console.log('du lieu tinh1', response)
+
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
+        console.log('du lieu tinh', data)
 
-        const provinces = Array.isArray(data) ? data : data.data || [];
+        const provinces = Array.isArray(data) ? data : [];
         if (!provinces.length) {
             console.warn('Không có dữ liệu tỉnh nào được trả về từ API.');
             provinceSelect.innerHTML = '<option value="">Không có dữ liệu tỉnh</option>';
@@ -175,9 +184,9 @@ async function loadProvinces() {
 
         provinceSelect.innerHTML = '<option value="">Chọn Tỉnh/Thành</option>';
         provinces.forEach(province => {
-            const option = document.createElement('option');
-            option.value = province.ProvinceID;
-            option.textContent = province.ProvinceName;
+            let option = document.createElement('option');
+            // option.code = province.ProvinceID;
+            option.value = province.name;
             provinceSelect.appendChild(option);
         });
     } catch (error) {
