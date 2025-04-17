@@ -126,7 +126,7 @@ orderController.information = async (req, res) => {
 	res.render("./pages/order/information", {
 		header: header,
 		user: header_user,
-		formatFunction: formatFunction,
+		formatFunction: formatFunction
 	})
 }
 
@@ -137,7 +137,7 @@ orderController.informationPost = async (req, res) => {
 	let customer_id = req.user.customer_id
 	let orderInfo = orderInformation.orderInfo
 	let orderDetails = orderInformation.orderDetails
-
+	console.log('DAY LA ORDER DETAILS', orderDetails)
 	order.insertOrder(
 		customer_id,
 		orderInfo,
@@ -288,7 +288,6 @@ orderController.cancelOrder = async (req, res) => {
 		}
 	})
 }
-
 orderController.checkPayment = async (req, res) => {
 	try {
 		console.log('DAY LA REQ NHAN DUOC', req.query);
