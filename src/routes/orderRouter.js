@@ -12,7 +12,7 @@ router.post('/updateCart', authMiddleware.getLoggedIn, orderController.updateCar
 
 router.get('/information', authMiddleware.isLoggedIn, orderController.information)
 router.post('/information', authMiddleware.isLoggedIn, orderController.informationPost)
-router.post('/calculate-shipping-fee', shippingController.calculateShippingFee)
+router.get('/calculate-shipping-fee', shippingController.calculateShippingFee)
 router.get('/provinces', shippingController.getProvinces);
 router.get('/districts/:provinceId', shippingController.getDistricts);
 router.get('/wards/:districtId', shippingController.getWards);

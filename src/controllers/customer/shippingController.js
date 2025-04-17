@@ -39,7 +39,9 @@ exports.getWards = async (req, res) => {
 };
 
 exports.calculateShippingFee = async (req, res) => {
-    const { province, district, ward, weight, transport, address } = req.body;
+    const { province, district, ward, weight, transport, address } = req.query;
+    console.log('xem xet dl',req.query)
+    console.log('xem xet dl', province, district, ward, weight, transport, address)
     // Giá trị mặc định cho địa chỉ lấy hàng (có thể điều chỉnh theo shop của bạn)
     const pickProvince = 'Hà Nội'; // Thay bằng tỉnh xuất hàng thực tế
     const pickDistrict = 'Quận Hai Bà Trưng'; // Thay bằng quận xuất hàng thực tế
@@ -48,7 +50,7 @@ exports.calculateShippingFee = async (req, res) => {
     try {
         const response = await axios.get('https://services.giaohangtietkiem.vn/services/shipment/fee', {
             headers: {
-                'Token': process.env.GHTK_API_TOKEN,
+                'Token': process.env.GHTK_API_KEY,
                 //'X-Client-Source': 'PARTNER_CODE', // Thay 'PARTNER_CODE' bằng mã đối tác của bạn
                 'Content-Type': 'application/json',
             },
@@ -65,13 +67,14 @@ exports.calculateShippingFee = async (req, res) => {
                 transport: transport
             },
         });
-
+        console.log('day la res tu GHTK', response.data)
         if (response.data.success) {
             res.json({ success: true, fee: response.data.fee.fee });
         } else {
             res.json({ success: false, message: response.data.message || 'Lỗi khi tính phí' });
         }
     } catch (error) {
+        console.log(error.message)
         res.json({ success: false, message: 'Lỗi khi tính phí vận chuyển: ' + error.message });
     }
 };

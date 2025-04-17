@@ -137,7 +137,7 @@ orderController.informationPost = async (req, res) => {
 	let customer_id = req.user.customer_id
 	let orderInfo = orderInformation.orderInfo
 	let orderDetails = orderInformation.orderDetails
-
+	console.log('DAY LA ORDER DETAILS', orderDetails)
 	order.insertOrder(
 		customer_id,
 		orderInfo,
@@ -186,7 +186,7 @@ orderController.payment = async (req, res) => {
 		})
 	} else if (paying_method_id == 2) {
 		try {
-			const amount = purchase[0].order_total_before;
+			const amount = purchase[0].order_total_after;
 			const bank = process.env.BANK_CODE;
 			const account = process.env.BANK_ACCOUNT;
 			const descrip = `Thanh toan don hang ${order_id}`;

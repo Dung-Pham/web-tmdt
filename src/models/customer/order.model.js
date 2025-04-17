@@ -113,11 +113,12 @@ order.insertOrder = function (customer_id, orderInfo, orderDetails, callback) {
                 if (error) {
                     console.log(error);
                     callback(1, 0, 0, 0);
-                } else {
+                } 
+                else {
                     // Cập nhật tổng tiền
                     let updateOrderTotal = `UPDATE orders 
-                                            SET order_total_before = (SELECT SUM(order_detail_quantity * order_detail_price_before) FROM order_details WHERE order_id = ${order_id}),
-                                                order_total_after = (SELECT SUM(order_detail_quantity * order_detail_price_after) FROM order_details WHERE order_id = ${order_id})
+                                            SET order_total_before = (SELECT order_detail_price_before FROM order_details WHERE order_id = ${order_id}),
+                                                order_total_after = (SELECT order_detail_price_after FROM order_details WHERE order_id = ${order_id})
                                             WHERE order_id = ${order_id}`;
 
                     db.query(updateOrderTotal, (errUpdate, resUpdate) => {
@@ -156,13 +157,14 @@ order.insertOrderDetails = async (order_id, orderDetails, callback) => {
     let insertOrderDetails = `INSERT INTO order_details (order_id, product_variant_id, order_detail_quantity, order_detail_price_before, order_detail_price_after) VALUES`;
 
     let values = orderDetails.map(item =>
-        `(${order_id}, ${item.product_variant_id}, ${item.order_detail_quantity}, 
-          (SELECT product_variant_price FROM product_variants WHERE product_variant_id = ${item.product_variant_id}),
-          (SELECT product_variant_price FROM product_variants WHERE product_variant_id = ${item.product_variant_id})
-        )`
+        `(${order_id}, ${item.product_variant_id}, ${item.order_detail_quantity}, ${item.totalProductPrice}, ${item.totalPayment})`
     ).join(", ");
+    console.log('DAY LA VALUE SAU KHI THEM TOTAL', values)
 
     insertOrderDetails += values;
+
+    console.log('DAY LA insertOrderDetails SAU KHI THEM TOTAL', insertOrderDetails)
+
 
     db.query(insertOrderDetails, (err, result) => {
         if (err) {
@@ -172,6 +174,7 @@ order.insertOrderDetails = async (order_id, orderDetails, callback) => {
             callback(0, 1);
         }
     });
+    
 }
 
 
