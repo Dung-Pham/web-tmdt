@@ -54,7 +54,7 @@ account.checkPassword = async (req, callback) => {
     })
 }
 account.getPaymentStatus = async (order_id) => {
-    let getPaymentStatus = `SELECT * FROM view_payments WHERE order_id = ${order_id}`
+    let getPaymentStatus = `SELECT * FROM orders WHERE order_id = ${order_id}`
 
     let paymentStatus = await query(getPaymentStatus)
     console.log('DAY LA PAYMENT STATUS', paymentStatus[0])

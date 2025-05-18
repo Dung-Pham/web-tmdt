@@ -38,21 +38,21 @@
 							<div class="register__actual-form">
 								<div class="register__input-wrap">
 									<input type="text" id="userName" name="userName" class="register__input-field"
-										autocomplete="off">
+										autocomplete="off" placeholder=" " required>
 									<label>Họ tên<span class="red-start">*</span></label>
 									<div class="register__error"></div>
 								</div>
 
 								<div class="register__input-wrap">
 									<input type="text" id="phoneNumber" name="phoneNumber" class="register__input-field"
-										autocomplete="off">
+										autocomplete="off" maxlength="10" pattern="[0-9]{10}" placeholder=" " required>
 									<label>Số điện thoại<span class="red-start">*</span></label>
 									<div class="register__error"></div>
 								</div>
 
 								<div class="register__input-wrap">
 									<input type="password" id="password" name="password" class="register__input-field"
-										autocomplete="off">
+										autocomplete="off" placeholder=" " required>
 									<label>Mật khẩu<span class="red-start">*</span></label>
 									<span id="togglePassword" class="register__toggle-password"><span
 											class="material-symbols-outlined eye-open">visibility</span>
@@ -62,7 +62,7 @@
 
 								<div class="register__input-wrap">
 									<input type="password" id="passwordRepeat" name="passwordRepeat"
-										class="register__input-field" autocomplete="off">
+										class="register__input-field" autocomplete="off" placeholder=" " required>
 									<label>Nhập lại mật khẩu<span class="red-start">*</span></label>
 									<span id="togglePasswordN" class="register__toggle-password"><span
 											class="material-symbols-outlined eye-open">visibility</span>
@@ -71,7 +71,7 @@
 								</div>
 								<div class="g-recaptcha" data-sitekey="6LfupQYrAAAAALFeCMm2NNI3_KBLXb8hmWs9pU5n"></div>
 								<!-- <button type="submit">Đăng ký</button> -->
-								<input type="submit" value="Đăng ký" class="register__sign-btn">
+								<input type="submit" id="registerForm" value="Đăng ký" class="register__sign-btn">
 
 								<p class="register__text">
 									Bằng việc đăng ký, người dùng đồng ý với

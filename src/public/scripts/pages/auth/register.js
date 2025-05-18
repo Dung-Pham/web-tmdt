@@ -78,16 +78,12 @@ togglePasswordButtonN.addEventListener("click", function () {
 
 
 const form = document.getElementById('form');
-const phoneNumber = document.getElementById('phoneNumber');
-const password = document.getElementById('password');
-const passwordRepeat = document.getElementById('passwordRepeat');
 
 
-form.addEventListener('submit', e => {
-    //Ngăn chặn việc gửi form nếu có bất kỳ trường nào không hợp lệ
+
+document.getElementById('registerForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    //Kiểm tra dữ liệu nhập vào
-    validateInput();
+    await validateInput(); // Dòng 90 có thể ở đây hoặc trong validateInput
 });
 
 
@@ -113,61 +109,221 @@ const isValidPhoneNumber = phoneNumber => {
     const re = /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/;
     return re.test(String(phoneNumber).trim());
 }
+//trường họ tên
+document.getElementById('userName').addEventListener('input', function (e) {
+    const userName = e.target.value.trim();
+    const errorDiv = e.target.parentElement.querySelector('.register__error');
+    const validPattern = /^[a-zA-ZÀ-ỹ\s]{2,50}$/;
+
+    if (validPattern.test(userName)) {
+        setSuccess(errorDiv);
+        e.target.style.borderColor = '#ccc';
+        return;
+    }
+    if (!userName) {
+        setError(errorDiv, 'Vui lòng nhập họ tên');
+    } else if (userName.length < 2) {
+        setError(errorDiv, 'Họ tên phải có ít nhất 2 ký tự');
+    } else if (!validPattern.test(userName)) {
+        setError(errorDiv, 'Họ tên chỉ chứa chữ cái và dấu cách');
+    }
+
+});
+document.getElementById('userName').addEventListener('blur', function (e) {
+    const userName = e.target.value.trim();
+    const errorDiv = e.target.parentElement.querySelector('.register__error');
+    const validPattern = /^[a-zA-ZÀ-ỹ\s]{2,50}$/;
+
+    if (validPattern.test(userName)) {
+        setSuccess(errorDiv);
+        e.target.style.borderColor = '#ccc';
+        return;
+    }
+    if (!userName) {
+        setError(errorDiv, 'Vui lòng nhập họ tên');
+    } else if (userName.length < 2) {
+        setError(errorDiv, 'Họ tên phải có ít nhất 2 ký tự');
+    } else if (!validPattern.test(userName)) {
+        setError(errorDiv, 'Họ tên chỉ chứa chữ cái và dấu cách');
+    }
+
+});
+// trường số điện thoại
+document.getElementById('phoneNumber').addEventListener('input', function (e) {
+    const phoneInput = e.target.value;
+    const errorDiv = e.target.parentElement.querySelector('.register__error');
+    const numberOnlyPattern = /^[0-9]*$/; // Chỉ chứa số
+    const validPattern = /^[0-9]{10}$/; // Chính xác 10 chữ số
+
+
+    if (!phoneInput) {
+        setError(errorDiv, 'Số điện thoại không được để trống');
+        return;
+    }
+
+    if (!numberOnlyPattern.test(phoneInput)) {
+        setError(errorDiv, 'Chỉ được nhập số!');
+    } else if (phoneInput.length > 0 && phoneInput.length < 10) {
+        setError(errorDiv, 'Số điện thoại không được để trống');
+    } else {
+        setSuccess(errorDiv); // Xóa lỗi nếu đúng 10 số
+    }
+});
+document.getElementById('phoneNumber').addEventListener('blur', function (e) {
+    const phoneInput = e.target.value;
+    const errorDiv = e.target.parentElement.querySelector('.register__error');
+    const numberOnlyPattern = /^[0-9]*$/; // Chỉ chứa số
+    const validPattern = /^[0-9]{10}$/; // Chính xác 10 chữ số
+
+
+    if (!phoneInput) {
+        setError(errorDiv, 'Số điện thoại không được để trống');
+        return;
+    }
+
+    if (!numberOnlyPattern.test(phoneInput)) {
+        setError(errorDiv, 'Chỉ được nhập số!');
+    } else if (phoneInput.length > 0 && phoneInput.length < 10) {
+        setError(errorDiv, 'Số điện thoại không được để trống');
+    } else {
+        setSuccess(errorDiv); // Xóa lỗi nếu đúng 10 số
+    }
+});
+document.getElementById('password').addEventListener('input', function (e) {
+    const passwordInput = e.target.value;
+    const errorDiv = e.target.parentElement.querySelector('.register__error');
+    const validPattern = /^[a-zA-Z0-9!@#$%^&*]{8,20}$/;
+
+    if (!passwordInput) {
+        setError(errorDiv, 'Mật khẩu không được để trống!');
+    } else if (!validPattern.test(passwordInput)) {
+        setError(errorDiv, 'Mật khẩu không hợp lệ (8-20 ký tự, chữ cái, số, ký tự đặc biệt)!');
+    } else {
+        setSuccess(errorDiv);
+        e.target.style.borderColor = '#ccc';
+    }
+});
+//trường mật khẩu
+document.getElementById('password').addEventListener('blur', function (e) {
+    const passwordInput = e.target.value;
+    const errorDiv = e.target.parentElement.querySelector('.register__error');
+    const validPattern = /^[a-zA-Z0-9!@#$%^&*]{8,20}$/;
+
+    if (!passwordInput) {
+        setError(errorDiv, 'Mật khẩu không được để trống!');
+    } else if (!validPattern.test(passwordInput)) {
+        setError(errorDiv, 'Mật khẩu không hợp lệ (8-20 ký tự, chữ cái, số, ký tự đặc biệt)!');
+    } else {
+        setSuccess(errorDiv);
+        e.target.style.borderColor = '#ccc';
+    }
+});
+
+//trường xác nhận mật khẩu
+document.getElementById('passwordRepeat').addEventListener('input', function (e) {
+    const passwordRepeat = e.target.value;
+    const passwordInput = document.getElementById('password').value;
+    const errorDiv = e.target.parentElement.querySelector('.register__error');
+    const validPattern = /^[a-zA-Z0-9!@#$%^&*]{8,20}$/;
+
+    if (!passwordRepeat) {
+        setError(errorDiv, 'Mật khẩu xác nhận không được để trống!');
+    } else if (!validPattern.test(passwordRepeat)) {
+        setError(errorDiv, 'Mật khẩu không hợp lệ (8-20 ký tự, chữ cái, số, ký tự đặc biệt)!');
+    } else if (passwordInput !== passwordRepeat) {
+        setError(errorDiv, 'Mật khẩu xác nhận không khớp');
+    }
+    else {
+        setSuccess(errorDiv);
+        e.target.style.borderColor = '#ccc';
+    }
+});
+document.getElementById('passwordRepeat').addEventListener('blur', function (e) {
+    const passwordRepeat = e.target.value;
+    const passwordInput = document.getElementById('password').value;
+    const errorDiv = e.target.parentElement.querySelector('.register__error');
+    const validPattern = /^[a-zA-Z0-9!@#$%^&*]{8,20}$/;
+
+    if (!passwordRepeat) {
+        setError(errorDiv, 'Mật khẩu xác nhận không được để trống!');
+    } else if (!validPattern.test(passwordRepeat)) {
+        setError(errorDiv, 'Mật khẩu không hợp lệ (8-20 ký tự, chữ cái, số, ký tự đặc biệt)!');
+    } else if (passwordInput !== passwordRepeat) {
+        setError(errorDiv, 'Mật khẩu xác nhận không khớp');
+    }
+    else {
+        setSuccess(errorDiv);
+        e.target.style.borderColor = '#ccc';
+    }
+});
 
 const validateInput = async () => {
     // Lấy giá trị của các trường thông tin
-    const userNameValue = userName.value.trim();
-    const phoneNumberValue = phoneNumber.value.trim();
-    const passwordValue = password.value.trim();
-    const passwordRepeatValue = passwordRepeat.value.trim();
-    // Lấy captcha response tại thời điểm submit
-    let captchaResponse;
-    try {
-        captchaResponse = grecaptcha.getResponse();
-    } catch (error) {
-        console.error('reCAPTCHA error:', error);
-        setCustomError('captcha-error', 'Lỗi xác thực CAPTCHA, vui lòng tải lại trang');
-        return;
-    }
-    // Kiểm tra giá trị của các trường thông tin
+    const nameInput = document.getElementById('userName').value.trim();
+    const phoneInput = document.getElementById('phoneNumber').value;
+    const passwordInput = document.getElementById('password').value;
+    const confirmPasswordInput = document.getElementById('passwordRepeat').value;
+    const nameErrorDiv = document.getElementById('userName').parentElement.querySelector('.register__error');
+    const phoneErrorDiv = document.getElementById('phoneNumber').parentElement.querySelector('.register__error');
+    const passwordErrorDiv = document.getElementById('password').parentElement.querySelector('.register__error');
+    const confirmErrorDiv = document.getElementById('passwordRepeat').parentElement.querySelector('.register__error');
+    const namePattern = /^[a-zA-ZÀ-ỹ\s]{2,50}$/;
+    const phonePattern = /^[0-9]{10}$/;
+    const passwordPattern = /^[a-zA-Z0-9!@#$%^&*]{8,20}$/;
+
     let isAllValid = true;
 
-    if (userNameValue === '') {
-        setError(userName, 'Vui lòng nhập họ tên!');
+    if (!nameInput) {
+        // nameErrorDiv.textContent = 'Vui lòng nhập Họ tên!';
+        // nameErrorDiv.classList.add('show');
         isAllValid = false;
-    } else {
-        setSuccess(userName);
+    } else if (nameInput.length < 2) {
+        // nameErrorDiv.textContent = 'Họ tên phải có ít nhất 2 ký tự!';
+        // nameErrorDiv.classList.add('show');
+        isAllValid = false;
+    } else if (!namePattern.test(nameInput)) {
+        // nameErrorDiv.textContent = 'Họ tên chỉ chứa chữ cái và dấu cách!';
+        // nameErrorDiv.classList.add('show');
+        isAllValid = false;
     }
+    // } else {
+    //     nameErrorDiv.classList.remove('error');
+    // }
 
-    if (phoneNumberValue === '') {
-        setError(phoneNumber, 'Vui lòng nhập số điện thoại!');
+    if (!phonePattern.test(phoneInput)) {
+        // phoneErrorDiv.textContent = 'Vui lòng nhập đúng 10 chữ số!';
+        // phoneErrorDiv.classList.add('show');
         isAllValid = false;
-    } else if (!isValidPhoneNumber(phoneNumberValue)) {
-        setError(phoneNumber, 'Số điện thoại không đúng định dạng!')
-        isAllValid = false;
-    } else {
-        setSuccess(phoneNumber);
     }
+    // else {
+    //     phoneErrorDiv.classList.remove('error');
+    // }
 
-    if (passwordValue === '') {
-        setError(password, 'Vui lòng nhập mật khẩu!');
+    if (!passwordPattern.test(passwordInput)) {
+        // passwordErrorDiv.textContent = 'Mật khẩu không hợp lệ (8-20 ký tự, chữ cái, số, ký tự đặc biệt)!';
+        // passwordErrorDiv.classList.add('show');
         isAllValid = false;
-    } else if (passwordRepeatValue === '') {
-        setError(passwordRepeat, 'Vui lòng nhập lại mật khẩu!');
-        isAllValid = false;
-    } else if (passwordValue.length < 8 || passwordRepeatValue.length < 8) {
-        setError(password, 'Mật khẩu phải ít nhất 8 ký tự!')
-        setError(passwordRepeat, 'Mật khẩu phải ít nhất 8 ký tự!')
-        isAllValid = false;
-    } else if (passwordRepeatValue !== passwordValue) {
-        setError(password, 'Mật khẩu không khớp!')
-        setError(passwordRepeat, 'Mật khẩu không khớp!')
-        isAllValid = false;
-    } else {
-        setSuccess(password);
-        setSuccess(passwordRepeat);
     }
+    // else {
+    //     passwordErrorDiv.classList.remove('error');
+    // }
 
+    if (!confirmPasswordInput) {
+        // confirmErrorDiv.textContent = 'Vui lòng nhập lại mật khẩu!';
+        // confirmErrorDiv.classList.add('show');
+        isAllValid = false;
+    } else if (confirmPasswordInput !== passwordInput) {
+        // confirmErrorDiv.textContent = 'Mật khẩu xác nhận không khớp!';
+        // confirmErrorDiv.classList.add('show');
+        isAllValid = false;
+    } else if (!passwordPattern.test(confirmPasswordInput)) {
+        // confirmErrorDiv.textContent = 'Mật khẩu xác nhận không hợp lệ (8-20 ký tự, chữ cái, số, ký tự đặc biệt)!';
+        // confirmErrorDiv.classList.add('show');
+        isAllValid = false;
+    }
+    // else {
+    //     confirmErrorDiv.classList.remove('error');
+    // }
     // Nếu tất cả các trường thông tin hợp lệ, thì gửi form
     if (isAllValid) {
         const register = {

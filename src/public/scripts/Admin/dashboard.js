@@ -147,7 +147,7 @@ var optionDonut = {
 		}
 	},
 	series: [21, 23, 19, 14, 6],
-	labels: ['Điện máy', 'Điện tử', 'Nhà bếp', 'Gia dụng', 'Khác'],
+	labels: ['Áo', 'Quần', 'Váy', 'Phụ kiện và túi ví nữ', 'Giày'],
 	legend: {
 		position: 'left',
 		offsetY: 80

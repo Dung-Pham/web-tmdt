@@ -1,15 +1,18 @@
 <aside id="admin-sidebar" class="admin-sidebar">
 
 	<div class="admin-sidebar__header">
-		<img src="/imgs/admin/logo-admin-white.png" alt="logo" />
+		<img src="/imgs/dqc.png" alt="logo" />
 		<span class="material-symbols-rounded" id="close-sidebar">close</span>
 	</div>
 
 	<div class="admin-sidebar__content">
 		<div class="admin-sidebar__profile profile">
 			<img class="profile__img" src="/imgs/admin/<%= admin.admin_avt_img ?? avt_default.jpg %>" alt="avt_admin">
-			<h4>Admin <%= admin.admin_name %></h4>
-			<small><%= admin.admin_role %></small>
+			<h4>Admin <%= admin.admin_name %>
+			</h4>
+			<small>
+				<%= admin.admin_role %>
+			</small>
 		</div>
 
 		<div class="admin-sidebar__list">

@@ -1,6 +1,6 @@
 // Biến toàn cục
-let isNameValid 
-let isPhoneNumberValid 
+let isNameValid
+let isPhoneNumberValid
 let cartData = localStorage.getItem('formDataArray') || '[]';
 let cartDataString;
 try {
@@ -145,19 +145,19 @@ async function calculateFee() {
     try {
         const response = await fetch(
             '/order/calculate-shipping-fee?' +
-              new URLSearchParams({
+            new URLSearchParams({
                 address,
                 province,
                 district,
                 weight,
                 ward,
-                transport : shippingMethod,
-                
-              }).toString(),
+                transport: shippingMethod,
+
+            }).toString(),
             {
-              method: "GET",
+                method: "GET",
             }
-          );
+        );
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -179,7 +179,7 @@ async function calculateFee() {
 
 // Cập nhật tổng thanh toán
 function updateTotalPayment() {
-    const shippingFee = parseInt(document.getElementById('shipping-fee').textContent.replace('đ', '').replaceAll(',', '')) || 0;
+    const shippingFee = parseInt(document.getElementById('shipping-fee').textContent.replace('đ', '').replaceAll('.', '')) || 0;
     totalPayment = totalProductPrice + shippingFee;
     document.getElementById('total-payment').textContent = toCurrency(totalPayment);
     cartDataString[0].totalPayment = totalPayment
@@ -250,7 +250,7 @@ async function loadDistricts(provinceId) {
         const data = await response.json();
         console.log('danh sach quan huyen tra ve', data)
 
-        const districts = Array.isArray(data.districts) ? data.districts :[];
+        const districts = Array.isArray(data.districts) ? data.districts : [];
 
         if (!districts.length) {
             console.warn('Không có dữ liệu quận/huyện nào được trả về.');
@@ -282,7 +282,7 @@ async function loadWards(districtId) {
         const data = await response.json();
         console.log('danh sach phuong xa tra ve', data)
 
-        const wards = Array.isArray(data.wards) ? data.wards :[];
+        const wards = Array.isArray(data.wards) ? data.wards : [];
 
         if (!wards.length) {
             console.warn('Không có dữ liệu phường/xã nào được trả về.');
@@ -401,7 +401,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Thêm sự kiện cho select
         document.querySelector('select[name="province"]').addEventListener('change', async (e) => {
-            console.log('day la tinh duoc chonj',e.target.value )
+            console.log('day la tinh duoc chonj', e.target.value)
             await loadDistricts(e.target.value);
         });
 

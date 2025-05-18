@@ -8,23 +8,23 @@ const axios = require("axios");
 const { env } = require("process")
 const Redis = require("ioredis");
 const redis = new Redis(); // Kết nối đến localhost:6379
-redis.on('connect', () => {
-	console.log('Connected to Redis successfully');
-});
+// redis.on('connect', () => {
+// 	console.log('Connected to Redis successfully');
+// });
 
-redis.on('error', (err) => {
-	console.error('Redis connection error:', err);
-});
+// redis.on('error', (err) => {
+// 	console.error('Redis connection error:', err);
+// });
 
-redis.on('ready', () => {
-	console.log('Redis client ready');
-	// Thử lưu một giá trị test
-	redis.set('test:app', 'hello from app').then(() => {
-		console.log('Test value saved to Redis');
-	}).catch(err => {
-		console.error('Failed to save test value:', err);
-	});
-});
+// redis.on('ready', () => {
+// 	console.log('Redis client ready');
+// 	// Thử lưu một giá trị test
+// 	redis.set('test:app', 'hello from app').then(() => {
+// 		console.log('Test value saved to Redis');
+// 	}).catch(err => {
+// 		console.error('Failed to save test value:', err);
+// 	});
+// });
 require("dotenv").config();
 const orderController = () => { }
 

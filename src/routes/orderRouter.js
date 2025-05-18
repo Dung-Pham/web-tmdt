@@ -22,5 +22,5 @@ router.get('/payment', authMiddleware.isLoggedIn, orderController.payment);
 router.post('/casso-webhook', orderController.cassoWebhook);
 router.post('/cancel_order', authMiddleware.isLoggedIn, orderController.cancelOrder)
 
-// router.post('/payment-notification' , orderController.paymentNotification);  //ko xoa
+// router.post('/payment-notification', orderController.paymentNotification);  //ko xoa
 module.exports = router;
