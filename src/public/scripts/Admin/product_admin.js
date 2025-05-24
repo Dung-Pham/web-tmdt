@@ -1,17 +1,3 @@
-// check checkbox
-const checkboxAll = document.querySelector('.checkbox')
-const checkboxes = Array.from(document.querySelectorAll('.checkbox')).slice(1)
-
-checkboxAll.addEventListener('click', checkAll)
-checkboxes.forEach(checkbox => checkbox.addEventListener('click', checkOne))
-
-function checkAll() {
-    checkboxes.forEach(checkbox => checkbox.checked = checkboxAll.checked)
-}
-
-function checkOne(event) {
-    checkboxAll.checked = checkboxes.every(checkbox => checkbox.checked)
-}
 document.addEventListener('DOMContentLoaded', function () {
     // Select the delete button (will hide in DB) and checkboxes
     const deleteButton = document.querySelector('.btn-outline-danger');
@@ -19,8 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const checkAllCheckbox = document.querySelector('.table__heading .checkbox');
     const tabs = document.querySelectorAll('.main-header__tabs .nav__item');
 
-    // Function to get selected category IDs
-    function getSelectedCategoryIds() {
+    // Function to get selected product IDs
+    function getSelectedProductIds() {
         const selectedIds = [];
         checkboxes.forEach(checkbox => {
             if (checkbox.checked && checkbox.closest('tr.employeeDetails')) {
@@ -43,30 +29,30 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Handle delete button click (hides categories in DB)
+    // Handle delete button click (hides products in DB)
     if (deleteButton) {
         deleteButton.addEventListener('click', async function (e) {
             e.preventDefault();
-            const selectedIds = getSelectedCategoryIds();
+            const selectedIds = getSelectedProductIds();
 
             if (selectedIds.length === 0) {
-                alert('Vui lòng chọn ít nhất một danh mục sản phẩm để xóa.');
+                alert('Vui lòng chọn ít nhất một sản phẩm để xóa.');
                 return;
             }
 
-            if (!confirm(`Bạn có chắc chắn muốn xóa ${selectedIds.length} danh mục sản phẩm?`)) {
+            if (!confirm(`Bạn có chắc chắn muốn xóa ${selectedIds.length} sản phẩm?`)) {
                 return;
             }
 
             try {
-                // Send PUT request to backend to hide categories
-                const response = await fetch('/admin/categories_admin/delete', {
+                // Send PUT request to backend to hide products
+                const response = await fetch('/admin/products_admin/delete', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     credentials: 'include', // Gửi cookie adminSaveS
-                    body: JSON.stringify({ categoryIds: selectedIds }),
+                    body: JSON.stringify({ productVariantIds: selectedIds }),
                 });
 
                 const result = await response.json();
@@ -80,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
 
+                    // Update total row count in header
                     const totalRowBadge = document.querySelector('.main-header__badge');
                     let totalRow = parseInt(totalRowBadge.textContent);
                     totalRow -= selectedIds.length;
@@ -90,14 +77,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (checkAllCheckbox) {
                         checkAllCheckbox.checked = false;
                     }
-                    alert('Xóa danh mục sản phẩm thành công!');
+                    alert('Xóa sản phẩm thành công!');
                 } else {
-                    alert(`Lỗi: ${result.message || 'Không thể xóa danh mục sản phẩm.'}`);
+                    alert(`Lỗi: ${result.message || 'Không thể xóa sản phẩm.'}`);
                 }
             } catch (error) {
-                console.error('Lỗi khi xóa danh mục sản phẩm:', error);
-                alert('Đã xảy ra lỗi khi xóa danh mục sản phẩm. Vui lòng thử lại.');
+                console.error('Lỗi khi xóa sản phẩm:', error);
+                alert('Đã xảy ra lỗi khi xóa sản phẩm. Vui lòng thử lại.');
             }
         });
     }
+    const editButtons = document.querySelectorAll('.edit-btn');
+    editButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const productVariantId = this.getAttribute('data-id');
+            window.location.href = `/admin/products_admin/edit/${productVariantId}`;
+        });
+    });
 });

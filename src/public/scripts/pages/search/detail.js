@@ -100,7 +100,7 @@ let addCartSpam = 0
 localStorage.setItem('addCartSpam', JSON.stringify(addCartSpam))
 
 // Cập nhật cart lần đầu tiên, count Cart, list dropdown cart
-addCartBtn.addEventListener('click', function firstAddCart (event) {
+addCartBtn.addEventListener('click', function firstAddCart(event) {
     const product_variant_id = document.getElementById('product_variant_id').value
     const quantity = document.getElementById('quantity').value
 
@@ -195,59 +195,59 @@ addCartBtn.addEventListener('click', function firstAddCart (event) {
             }
         })
 
-        // Tặt sự kiện cập nhật cart lần đầu tiên, bật sự kiện checkSpam
-        addCartBtn.removeEventListener("click", firstAddCart) 
-        // addCartBtn.addEventListener("click", spamAddCart)  
-        addCartBtn.addEventListener("click", function spamAddCart () {
-            const quantity = document.getElementById('quantity').value
-        
-            let quantitySpam = Number(JSON.parse(localStorage.getItem('addCartSpam')))
-            const cartSuccessModal = document.querySelector('.success-modal')
-                cartSuccessModal.style.display = 'flex'
-                setTimeout(() => {
-                    cartSuccessModal.style.display = 'none'
-                }, 1000)
-            quantitySpam += Number(quantity)
-            localStorage.removeItem('addCartSpam')
-            localStorage.setItem('addCartSpam', JSON.stringify(quantitySpam))
-            // console.log(JSON.parse(localStorage.getItem('addCartSpam')))
+    // Tặt sự kiện cập nhật cart lần đầu tiên, bật sự kiện checkSpam
+    addCartBtn.removeEventListener("click", firstAddCart)
+    // addCartBtn.addEventListener("click", spamAddCart)  
+    addCartBtn.addEventListener("click", function spamAddCart() {
+        const quantity = document.getElementById('quantity').value
+
+        let quantitySpam = Number(JSON.parse(localStorage.getItem('addCartSpam')))
+        const cartSuccessModal = document.querySelector('.success-modal')
+        cartSuccessModal.style.display = 'flex'
+        setTimeout(() => {
+            cartSuccessModal.style.display = 'none'
+        }, 1000)
+        quantitySpam += Number(quantity)
+        localStorage.removeItem('addCartSpam')
+        localStorage.setItem('addCartSpam', JSON.stringify(quantitySpam))
+        // console.log(JSON.parse(localStorage.getItem('addCartSpam')))
+    })
+
+    window.addEventListener("load", async () => {
+        const product_variant_id = document.getElementById('product_variant_id').value
+        const cart = {
+            'product_variant_id': product_variant_id,
+            'cart_quantity': Number(JSON.parse(localStorage.getItem('addCartSpam')))
+        }
+
+        await fetch('/order/addCart', {
+            method: 'POST',
+            body: JSON.stringify(cart),
+            headers: {
+                'Content-Type': 'application/json'
+            }
         })
 
-        window.addEventListener("load", async () => {
-            const product_variant_id = document.getElementById('product_variant_id').value
-            const cart = {
-                'product_variant_id': product_variant_id,
-                'cart_quantity': Number(JSON.parse(localStorage.getItem('addCartSpam')))
+        localStorage.removeItem('addCartSpam')
+    })
+
+    window.addEventListener("beforeunload", async () => {
+        const product_variant_id = document.getElementById('product_variant_id').value
+        const cart = {
+            'product_variant_id': product_variant_id,
+            'cart_quantity': Number(JSON.parse(localStorage.getItem('addCartSpam')))
+        }
+
+        await fetch('/order/addCart', {
+            method: 'POST',
+            body: JSON.stringify(cart),
+            headers: {
+                'Content-Type': 'application/json'
             }
-        
-            await fetch('/order/addCart', {
-                method: 'POST',
-                body: JSON.stringify(cart),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-        
-            localStorage.removeItem('addCartSpam')
         })
 
-        window.addEventListener("beforeunload", async () => {
-            const product_variant_id = document.getElementById('product_variant_id').value
-            const cart = {
-                'product_variant_id': product_variant_id,
-                'cart_quantity': Number(JSON.parse(localStorage.getItem('addCartSpam')))
-            }
-        
-            await fetch('/order/addCart', {
-                method: 'POST',
-                body: JSON.stringify(cart),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-        
-            localStorage.removeItem('addCartSpam')
-        })
+        localStorage.removeItem('addCartSpam')
+    })
 })
 
 
