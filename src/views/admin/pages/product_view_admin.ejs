@@ -6,200 +6,321 @@
 	<meta name="theme-color" content="#2a7ee4">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="author" content="IE104.O12_Nhom2">
-	<meta name="description" content="Chào mừng bạn đến với TECHTWO - địa chỉ mua sắm trực tuyến hàng đầu về điện máy! Khám phá thế giới công nghệ với sự đa dạng và chất lượng tốt nhất từ máy tính, điện thoại di động đến các sản phẩm gia dụng thông minh. Mua sắm an toàn, thuận tiện và tiết kiệm ngay hôm nay với các ưu đãi độc quyền. TECHTWO - Nơi nâng cao cuộc sống thông qua công nghệ!.">
+	<meta name="description"
+		content="Chào mừng bạn đến với TECHTWO - địa chỉ mua sắm trực tuyến hàng đầu về điện máy! Khám phá thế giới công nghệ với sự đa dạng và chất lượng tốt nhất từ máy tính, điện thoại di động đến các sản phẩm gia dụng thông minh. Mua sắm an toàn, thuận tiện và tiết kiệm ngay hôm nay với các ưu đãi độc quyền. TECHTWO - Nơi nâng cao cuộc sống thông qua công nghệ!.">
 	<link rel="shortcut icon" type="image/x-icon" href="/imgs/ico-logo-blue.png">
 	<link rel="stylesheet" href="/styles/admin/pages/cate_view_admin.css">
 	<link rel="stylesheet" href="/styles/admin/pages/product_view_admin.css">
 
 	<title>TECHTWO.Admin - Thêm sản phẩm</title>
+	<style>
+		.dz-preview {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 15px;
+			margin-top: 15px;
+			max-width: 100%;
+			overflow-x: auto;
+			/* Cho phép cuộn ngang nếu quá nhiều ảnh */
+			padding-bottom: 10px;
+			/* Đảm bảo không bị cắt dưới cùng */
+		}
+
+		.dz-image-preview {
+			position: relative;
+			width: 120px;
+			height: 120px;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			overflow: hidden;
+			flex-shrink: 0;
+			/* Ngăn ảnh co lại */
+		}
+
+		.dz-image-preview img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.dz-remove {
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			background: #ff4d4f;
+			color: white;
+			border: none;
+			border-radius: 50%;
+			width: 24px;
+			height: 24px;
+			cursor: pointer;
+			font-size: 14px;
+			line-height: 24px;
+			text-align: center;
+		}
+
+		.dz-remove:hover {
+			background: #d9363e;
+		}
+
+		.card-item {
+			display: flex;
+			gap: 10px;
+			margin-bottom: 10px;
+		}
+
+		.card-item input {
+			flex: 1;
+		}
+
+		.file-error-message {
+			color: red;
+			display: none;
+			margin-top: 10px;
+			text-align: center;
+		}
+
+		.dz-message {
+			text-align: center;
+			padding: 20px;
+		}
+
+		.dz-message-btn {
+			margin-top: 10px;
+		}
+
+		/* Đảm bảo container cha đủ lớn và responsive */
+		.card-body {
+			max-width: 100%;
+			overflow-x: auto;
+			/* Cuộn ngang nếu cần */
+		}
+
+		#dropzone {
+			width: 100%;
+		}
+
+		@media (max-width: 768px) {
+			.dz-image-preview {
+				width: 100px;
+				height: 100px;
+			}
+
+			.dz-remove {
+				width: 20px;
+				height: 20px;
+				font-size: 12px;
+				line-height: 20px;
+			}
+		}
+	</style>
 </head>
 
 <body>
 	<div class="grid-container">
 		<!-- Header -->
 		<%- include('../partials/sidebar_admin') %>
-		<!-- Sidebar -->
-		<%- include('../partials/header_admin', title) %>
-		<!-- Main -->
-		<main class="main-container">
-			<!-- Page Header -->
-			<div class="content container-fluid">
-				<!-- Page Header -->
-				<div class="page-header">
-					<div class="row align-items-center">
-						<div class="col-sm mb-2 mb-sm-0">
-							<%- include('../partials/breadcrumb.ejs', breadcrumb = [{text: 'Sản phẩm',link: '/admin/products_admin'}, {text: 'Thêm sản phẩm', link: '#'}]) %>
+			<!-- Sidebar -->
+			<%- include('../partials/header_admin', title) %>
+				<!-- Main -->
+				<main class="main-container">
+					<!-- Page Header -->
+					<div class="content container-fluid">
+						<!-- Page Header -->
+						<div class="page-header">
+							<div class="row align-items-center">
+								<div class="col-sm mb-2 mb-sm-0">
+									<%- include('../partials/breadcrumb.ejs', breadcrumb=[{text: 'Sản phẩm'
+										,link: '/admin/products_admin' }, {text: 'Thêm sản phẩm' , link: '#' }]) %>
 
-							<div class="page-header__title">
-								<h1>Thêm sản phẩm</h1>
-								<button class="btn-admin btn-primary">
-									<span class="material-symbols-outlined">
-										save
-									</span>
-									Lưu</button>
-							</div>
+										<div class="page-header__title">
+											<h1>Thêm sản phẩm</h1>
+											<button id="saveProductBtn" class="btn-admin btn-primary">
+												<span class="material-symbols-outlined">
+													save
+												</span>
+												Lưu</button>
+										</div>
 
-						</div>
-						<!-- End Col -->
-					</div>
-					<!-- End Row -->
-				</div>
-				<!-- End Page Header -->
-
-				<div class="row">
-					<div class="main-form">
-						<!-- Card -->
-						<div class="card">
-							<!-- Header -->
-							<div class="card-header">
-								<h4 class="card-header-title">Thông tin sản phẩm</h4>
-							</div>
-							<!-- End Header -->
-
-							<!-- Body -->
-							<div class="card-body">
-								<!-- Form -->
-								<div>
-									<label for="productNameLabel" class="form-label">Tên sản phẩm </label>
-									<input type="text" class="form-control" name="productName" id="productNameLabel" placeholder="Nhập tên sản phẩm" value="">
-								</div>
-								<!-- End Form -->
-
-								<!-- Form -->
-								<div>
-									<label for="categoryLabel-ts-control" class="form-label" id="categoryLabel-ts-label">Thuộc loại danh mục</label>
-
-									<!-- Select -->
-									<div class="tom-select-custom">
-										<select class="js-select form-select tomselected ts-hidden-accessible" autocomplete="off" id="categoryLabel-ts-control">
-											<% categories.forEach(function(category) { %>
-											<option value="<%= category.category_name %>"><%= category.category_name %></option>
-											<% }) %>
-										</select>
-									</div>
-									<!-- End Select -->
-								</div>
-								<!-- Form -->
-
-								<label class="form-label">Mô tả sản phẩm </label>
-
-								<!-- Quill -->
-								<div class="quill-custom">
-									<div class="ql-toolbar ql-snow">
-										<button type="button"><span class="material-symbols-rounded"> format_bold </span></button>
-										<button type="button"><span class="material-symbols-rounded"> format_italic </span></button>
-										<button type="button"><span class="material-symbols-rounded"> format_underlined </span></button>
-										<button type="button"><span class="material-symbols-rounded"> format_strikethrough </span></button>
-										<button type="button"><span class="material-symbols-rounded"> link </span></button>
-										<button type="button"><span class="material-symbols-rounded"> image </span></button>
-										<button type="button"><span class="material-symbols-rounded"> format_quote </span></button>
-										<button type="button"><span class="material-symbols-rounded"> code </span></button>
-										<button type="button"><span class="material-symbols-rounded"> format_list_bulleted </span></button>
-									</div>
-									<textarea name="product-description" placeholder="Nhập mô tả sản phẩm..."></textarea>
-								</div>
-								<!-- End Quill -->
-							</div>
-							<!-- Body -->
-						</div>
-						<!-- End Card -->
-
-						<!-- Card -->
-						<div class="card">
-							<!-- Header -->
-							<div class="card-header card-header-content-between">
-								<h4 class="card-header-title">Ảnh</h4>
-							</div>
-							<!-- End Header -->
-
-							<!-- Body -->
-							<div class="card-body">
-								<!-- Dropzone -->
-								<div id="attachFilesNewProjectLabel" class="js-dropzone dz-dropzone dz-dropzone-card dz-clickable">
-									<div class="dz-message">
-										<img class="img-upload" src="/imgs/admin/img-upload.svg" alt="Image Description" data-hs-theme-appearance="default">
-										<h5>Kéo và thả hình ảnh tại đây</h5>
-										<p>hoặc</p>
-										<div class="dz-message-btn">
-											<input type="file" name="image" id="imageUpload" accept="image/*" style="display: none">
-											<label for="imageUpload" class="image-upload-label">
-												<span class="material-symbols-rounded"> upload </span> 
-												Thêm hình ảnh
-											</label>
-									</div>
-									</div>
-								</div>
-								<!-- End Dropzone -->
-							</div>
-							<!-- Body -->
-						</div>
-						<!-- End Card -->
-					</div>
-
-					<div class="main-form">
-						<!-- Card -->
-						<div class="card variants">
-							<!-- Header -->
-							<div class="card-header">
-								<h4 class="card-header-title">Biến thể</h4>
-							</div>
-							<!-- End Header -->
-
-							<!-- Body -->
-							<div class="card-body">
-								<div class="card-item">
-									<div>
-										<input type="text" class="form-control" placeholder="Tên biến thể">
-									</div>
-
-									<div>
-										<input type="text" class="form-control" placeholder="Nhập giá tiền">
-									</div>
 								</div>
 								<!-- End Col -->
 							</div>
 							<!-- End Row -->
-
-							<!-- Container For Input Field -->
-							<button class="add-another-btn"> <span class="material-symbols-outlined"> add </span> Thêm biến thể khác </button>
-
 						</div>
+						<!-- End Page Header -->
 
-						<!-- Card -->
-						<div class="card details">
-							<!-- Header -->
-							<div class="card-header">
-								<h4 class="card-header-title">Chi tiết sản phẩm</h4>
-							</div>
-							<!-- End Header -->
+						<div class="row">
+							<div class="main-form">
+								<!-- Card -->
+								<div class="card">
+									<!-- Header -->
+									<div class="card-header">
+										<h4 class="card-header-title">Thông tin sản phẩm</h4>
+									</div>
+									<!-- End Header -->
 
-							<!-- Body -->
-							<div class="card-body">
-								<div class="card-item">
-									<input type="text" class="form-control" placeholder="Tên thông số">
+									<!-- Body -->
+									<div class="card-body">
+										<!-- Form -->
+										<form id="productForm" enctype="multipart/form-data">
+											<div>
+												<label for="productNameLabel" class="form-label">Tên sản phẩm </label>
+												<input type="text" class="form-control" name="productName"
+													id="productNameLabel" placeholder="Nhập tên sản phẩm" value="">
+											</div>
+											<!-- End Form -->
 
-									<input type="text" class="form-control" placeholder="Giá trị thông số">
+											<!-- Form -->
+											<div>
+												<label for="categoryLabel-ts-control" class="form-label">Thuộc loại danh
+													mục</label>
+
+												<!-- Select -->
+												<div class="tom-select-custom">
+													<select
+														class="js-select form-select tomselected ts-hidden-accessible"
+														autocomplete="off" id="categoryNameLabel" name="categoryId">
+														<% categories.forEach(function(category) { %>
+															<option value="<%= category.category_id %>">
+																<%= category.category_name %>
+															</option>
+															<% }) %>
+													</select>
+												</div>
+												<!-- End Select -->
+											</div>
+											<!-- Form -->
+
+											<label class="form-label">Mô tả sản phẩm </label>
+
+											<!-- Quill -->
+											<div class="quill-custom">
+												<textarea name="description" id="description"
+													placeholder="Nhập mô tả sản phẩm..."></textarea>
+											</div>
+										</form>
+										<!-- End Quill -->
+									</div>
+									<!-- Body -->
 								</div>
-								<!-- End Col -->
-							</div>
-							<!-- End Row -->
+								<!-- End Card -->
 
-							<!-- Container For Input Field -->
-							<button class="add-another-btn"> <span class="material-symbols-outlined"> add </span> Thêm thông số khác </button>
+								<!-- Card -->
+								<div class="card">
+									<!-- Header -->
+									<div class="card-header">
+										<h4 class="card-header-title">Ảnh</h4>
+									</div>
+									<!-- End Header -->
+
+									<!-- Body -->
+									<div class="card-body">
+										<!-- Dropzone -->
+										<div id="dropzone"
+											class="js-dropzone dz-dropzone dz-dropzone-card dz-clickable">
+											<div class="dz-message">
+												<img class="img-upload" src="/imgs/admin/img-upload.svg"
+													alt="Image Description" data-hs-theme-appearance="default">
+												<h5>Chọn hình ảnh sản phẩm</h5>
+												<div class="dz-message-btn">
+													<input type="file" name="images" id="imageUpload" accept="image/*"
+														multiple style="display: none">
+													<label for="imageUpload" class="image-upload-label">
+														<span class="material-symbols-rounded"> upload </span>
+														Thêm hình ảnh
+													</label>
+												</div>
+											</div>
+											<div class="file-error-message" id="fileErrorMessage">Vui lòng chỉ chọn file
+												hình ảnh!</div>
+											<div class="dz-preview"></div>
+										</div>
+										<!-- End Dropzone -->
+									</div>
+									<!-- Body -->
+								</div>
+								<!-- End Card -->
+							</div>
+
+							<div class="main-form">
+								<!-- Card -->
+								<div class="card variants">
+									<!-- Header -->
+									<div class="card-header">
+										<h4 class="card-header-title">Biến thể</h4>
+									</div>
+									<!-- End Header -->
+
+									<!-- Body -->
+									<div class="card-body" id="variantsContainer">
+										<div class="card-item">
+											<div>
+												<input type="text" class="form-control" name="variants[name][]"
+													placeholder="Tên biến thể" required>
+											</div>
+
+											<div>
+												<input type="number" class="form-control" name="variants[price][]"
+													placeholder="Nhập giá tiền" step="0.01" required>
+											</div>
+											<div>
+												<input type="number" class="form-control" name="variants[stock][]"
+													placeholder="Nhập số lượng có sẵn" required>
+											</div>
+											<button type="button" class="remove-btn">Xóa</button>
+										</div>
+										<!-- End Col -->
+									</div>
+									<!-- End Row -->
+
+									<!-- Container For Input Field -->
+									<button type="button" class="add-another-btn" id="addVariantBtn" value=""> <span
+											class="material-symbols-outlined"> add
+										</span> Thêm biến thể khác </button>
+
+								</div>
+
+								<!-- Card -->
+								<div class="card details">
+									<!-- Header -->
+									<div class="card-header">
+										<h4 class="card-header-title">Chi tiết sản phẩm</h4>
+									</div>
+									<!-- End Header -->
+
+									<!-- Body -->
+									<div class="card-body" id="detailsContainer">
+										<div class="card-item">
+											<input type="text" class="form-control" name="details[spec_name][]"
+												placeholder="Tên thông số" required>
+
+											<input type="text" class="form-control" name="details[spec_value][]"
+												placeholder="Giá trị thông số" required>
+
+											<button type="button" class="remove-btn">Xóa</button>
+										</div>
+										<!-- End Col -->
+									</div>
+									<!-- End Row -->
+
+									<!-- Container For Input Field -->
+									<button type="button" class="add-another-btn" id="addDetailBtn" value=""> <span
+											class="material-symbols-outlined"> add
+										</span> Thêm thông số khác </button>
+								</div>
+							</div>
+							<!-- End Add Another Option Input Field -->
 						</div>
+						<!-- Body -->
+						<!-- End Card -->
 					</div>
-					<!-- End Add Another Option Input Field -->
-				</div>
-				<!-- Body -->
-				<!-- End Card -->
-			</div>
-			<!-- End Col -->
-			</main>
+					<!-- End Col -->
+				</main>
 	</div>
 	<!-- Body -->
 
 	<!-- Scripts -->
-	<script src="/scripts/admin/cate_view_admin.js"></script>
+	<script src="/scripts/admin/product_view_admin.js"></script>
 	<script src="/scripts/admin/index_admin.js"></script>
 </body>
 

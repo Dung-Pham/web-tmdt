@@ -53,7 +53,7 @@
 							<% } %>
 								<p>(<%= productInfo.product_rate ?? 'null' %>)</p>
 								<p>
-									<%= productFeedbacks.length !=0 ? productFeedbacks.length : '100' %> lượt đánh giá
+									<%= productFeedbacks.length !=0 ? productFeedbacks.length : '0' %> lượt đánh giá
 								</p>
 					</div>
 				</section>
@@ -93,6 +93,9 @@
 													<%= formatFunction.toCurrency(variant.product_variant_price)
 														?? 'null' %>
 												</span>
+												<span class="variant__price">
+													Số lượng còn lại: <%= variant.product_variant_available ?? 'null' %>
+												</span>
 											</a>
 											<% }) %>
 									</div>
@@ -104,7 +107,9 @@
 										<button onclick="minus(event)" type="button"><span
 												class="material-symbols-outlined">remove</span></button>
 										<input id="quantity" onchange="changeQuantity(event)" name="quantity"
-											type="number" value="1" min="1" max="100" placeholder="0">
+											type="number" value="1" min="1"
+											max="<%= variantProducts.find(variant => variant.product_variant_id == product_variant_id)?.product_variant_available ?? '1' %>"
+											placeholder="0">
 										<button onclick="add(event)" type="button"><span
 												class="material-symbols-outlined">add</span></button>
 									</div>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="theme-color" content="#2a7ee4">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="IE104.O12_Nhom2">
+    <meta name="description" content="Chỉnh sửa thông tin sản phẩm trên TECHTWO Admin.">
+    <link rel="shortcut icon" type="image/x-icon" href="/imgs/ico-logo-blue.png">
+    <link rel="stylesheet" href="/styles/admin/pages/cate_admin.css">
+    <title>TECHTWO.Admin - Chỉnh sửa sản phẩm</title>
+    <style>
+        .main__form {
+            display: block;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grid-container">
+        <!-- Header -->
+        <%- include('../partials/sidebar_admin') %>
+            <!-- Sidebar -->
+            <%- include('../partials/header_admin', {title: 'Chỉnh sửa sản phẩm' }) %>
+                <!-- Main -->
+                <main class="main-container">
+                    <div class="main-header">
+                        <h3 class="main-header-title">Chỉnh sửa sản phẩm</h3>
+                    </div>
+                    <div class="main__form">
+                        <form>
+                            <% productVariant.forEach(function(product) { %>
+                                <div class="form-group">
+                                    <label for="product_variant_id">ID biến thể sản phẩm</label>
+                                    <input type="text" id="product_variant_id" name="product_variant_id"
+                                        value="<%= product.product_variant_id %>" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="product_name">Tên sản phẩm</label>
+                                    <input type="text" id="product_name" name="product_name"
+                                        value="<%= product.product_name %>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="product_variant_name">Tên biến thể</label>
+                                    <input type="text" id="product_variant_name" name="product_variant_name"
+                                        value="<%= product.product_variant_name %>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="product_variant_available">Số lượng còn lại trong kho</label>
+                                    <input type="number" id="product_variant_available" name="product_variant_available"
+                                        value="<%= product.product_variant_available %>" required min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="product_variant_price">Giá sản phẩm</label>
+                                    <input type="number" id="product_variant_price" name="product_variant_price"
+                                        value="<%= product.product_variant_price %>" required min="0" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="product_avt_img">Ảnh sản phẩm</label>
+                                    <input type="file" id="product_avt_img" name="product_avt_img" accept="image/*">
+                                    <p>Hiện tại: <img
+                                            src="/imgs/product_image/P<%= product.product_id %>/<%= product.product_avt_img || 'default.png' %>"
+                                            alt="Ảnh sản phẩm" width="100"></p>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn-admin btn-primary">Lưu</button>
+                                    <a href="/admin/products_admin" class="btn-admin btn-outline-danger">Hủy</a>
+                                </div>
+                                <% }) %>
+                        </form>
+                    </div>
+                </main>
+    </div>
+    <script src="/scripts/admin/index_admin.js"></script>
+    <script src="/scripts/admin/product_edit.js"></script>
+</body>
+
+</html>
